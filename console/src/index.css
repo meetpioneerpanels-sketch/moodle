@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-white text-ink font-sans antialiased;
+  }
+  h1, h2, h3, h4 {
+    @apply font-extrabold tracking-tight text-ink;
+  }
+  ::selection {
+    @apply bg-grass/25;
+  }
+}
+
+@layer components {
+  /* Chunky 3D button: 2px darker bottom border that collapses on press. */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3
+           font-extrabold uppercase tracking-wide text-sm select-none
+           border-b-4 transition-all duration-100
+           active:translate-y-[2px] active:border-b-2
+           disabled:opacity-50 disabled:pointer-events-none;
+  }
+  .btn-sm {
+    @apply px-3.5 py-2 text-xs rounded-xl border-b-4 active:border-b-2;
+  }
+  .btn-primary {
+    @apply btn bg-grass border-grass-dark text-white hover:brightness-105;
+  }
+  .btn-blue {
+    @apply btn bg-macaw border-macaw-dark text-white hover:brightness-105;
+  }
+  .btn-danger {
+    @apply btn bg-cardinal border-cardinal-dark text-white hover:brightness-105;
+  }
+  .btn-ghost {
+    @apply btn bg-white border-swan text-wolf hover:bg-gray-50 border-2 border-b-4;
+  }
+  .card {
+    @apply bg-white rounded-2xl border-2 border-swan shadow-sm;
+  }
+  .input {
+    @apply w-full rounded-2xl border-2 border-swan bg-white px-4 py-3 text-ink
+           font-bold placeholder:font-normal placeholder:text-wolf
+           focus:outline-none focus:border-macaw transition-colors;
+  }
+  .label {
+    @apply block text-xs font-extrabold uppercase tracking-wide text-wolf mb-1.5;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-extrabold;
+  }
+  .skeleton {
+    @apply rounded-2xl bg-gradient-to-r from-swan/60 via-swan/30 to-swan/60
+           bg-[length:800px_100%] animate-shimmer;
+  }
+}
