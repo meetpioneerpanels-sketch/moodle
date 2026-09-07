@@ -53,6 +53,38 @@
 
     --skeleton-from: #eef0f6;
     --skeleton-via: #e3e6f0;
+
+    /* Frosted surfaces. Translucency is only ever decorative - text always sits
+       on enough opacity to stay AA against the busiest part of the backdrop. */
+    --glass: rgb(255 255 255 / 0.72);
+    --glass-strong: rgb(255 255 255 / 0.86);
+    --glass-line: rgb(255 255 255 / 0.7);
+    --glass-blur: 18px;
+
+    /* Cards carry a barely-there vertical sheen rather than a flat fill. */
+    --card-sheen: linear-gradient(170deg, #ffffff 0%, #fbfcff 100%);
+
+    /* Soft-relief (neumorphic) pair: warm highlight above, cool shadow below. */
+    --relief: 5px 5px 12px rgb(44 48 71 / 0.08), -5px -5px 12px rgb(255 255 255 / 0.95);
+    --relief-sm: 3px 3px 8px rgb(44 48 71 / 0.07), -3px -3px 8px rgb(255 255 255 / 0.95);
+    --relief-inset: inset 3px 3px 7px rgb(44 48 71 / 0.09),
+      inset -3px -3px 7px rgb(255 255 255 / 0.9);
+
+    /* Ambient canvas: three soft colour fields plus a faint dot grid. */
+    --ambient-1: rgb(255 176 190 / 0.60);
+    --ambient-2: rgb(168 210 248 / 0.58);
+    --ambient-3: rgb(255 219 160 / 0.52);
+    --ambient-dot: rgb(44 48 71 / 0.07);
+
+    /* Gradient fills for primary actions and accent tiles. */
+    --grad-brand: linear-gradient(135deg, #e11d3c 0%, #c8102e 55%, #a30b23 100%);
+    --grad-sky: linear-gradient(135deg, #4fb4ea 0%, #2d9cdb 100%);
+    --grad-amber: linear-gradient(135deg, #ffc05a 0%, #f5a623 100%);
+    --grad-rose: linear-gradient(135deg, #ff8095 0%, #ee5a6f 100%);
+    --glow-brand: 0 8px 20px -6px rgb(200 16 46 / 0.45);
+    --glow-sky: 0 8px 20px -6px rgb(45 156 219 / 0.4);
+    --glow-amber: 0 8px 20px -6px rgb(245 166 35 / 0.4);
+    --glow-rose: 0 8px 20px -6px rgb(238 90 111 / 0.4);
   }
 
   [data-theme='dark'] {
@@ -101,6 +133,32 @@
 
     --skeleton-from: #222634;
     --skeleton-via: #2b3040;
+
+    --glass: rgb(28 31 43 / 0.72);
+    --glass-strong: rgb(28 31 43 / 0.88);
+    --glass-line: rgb(255 255 255 / 0.08);
+    --glass-blur: 18px;
+
+    --card-sheen: linear-gradient(170deg, #20232f 0%, #1a1d27 100%);
+
+    --relief: 5px 5px 12px rgb(0 0 0 / 0.45), -5px -5px 12px rgb(255 255 255 / 0.035);
+    --relief-sm: 3px 3px 8px rgb(0 0 0 / 0.4), -3px -3px 8px rgb(255 255 255 / 0.03);
+    --relief-inset: inset 3px 3px 7px rgb(0 0 0 / 0.5),
+      inset -3px -3px 7px rgb(255 255 255 / 0.04);
+
+    --ambient-1: rgb(239 67 88 / 0.26);
+    --ambient-2: rgb(45 156 219 / 0.22);
+    --ambient-3: rgb(155 81 224 / 0.20);
+    --ambient-dot: rgb(255 255 255 / 0.05);
+
+    --grad-brand: linear-gradient(135deg, #f4586c 0%, #ef4358 55%, #cf2b40 100%);
+    --grad-sky: linear-gradient(135deg, #6cc4f2 0%, #4fb3e8 100%);
+    --grad-amber: linear-gradient(135deg, #ffce76 0%, #f5a623 100%);
+    --grad-rose: linear-gradient(135deg, #ff9aa9 0%, #f4788a 100%);
+    --glow-brand: 0 8px 22px -6px rgb(239 67 88 / 0.5);
+    --glow-sky: 0 8px 22px -6px rgb(79 179 232 / 0.45);
+    --glow-amber: 0 8px 22px -6px rgb(245 166 35 / 0.45);
+    --glow-rose: 0 8px 22px -6px rgb(244 120 138 / 0.45);
   }
 
   /* Subject / course accents. Each tone-* sets the three variables the
@@ -191,10 +249,20 @@
     @apply h-9 gap-1.5 px-4 text-[13px];
   }
   .btn-primary {
-    @apply btn bg-brand text-white shadow-sm hover:bg-brand-hover active:scale-[0.98];
+    @apply btn text-white active:scale-[0.98];
+    background-image: var(--grad-brand);
+    box-shadow: var(--glow-brand);
+  }
+  .btn-primary:hover {
+    filter: brightness(1.06);
   }
   .btn-blue {
-    @apply btn bg-sky text-white shadow-sm hover:brightness-95 active:scale-[0.98];
+    @apply btn text-white active:scale-[0.98];
+    background-image: var(--grad-sky);
+    box-shadow: var(--glow-sky);
+  }
+  .btn-blue:hover {
+    filter: brightness(1.06);
   }
   .btn-secondary,
   .btn-ghost {
@@ -216,13 +284,74 @@
     @apply inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full
            transition-transform duration-150 active:scale-95;
   }
+  /* Gradient-filled variants for the accent circles. */
+  .fill-brand {
+    background-image: var(--grad-brand);
+    color: #fff;
+    box-shadow: var(--glow-brand);
+  }
+  .fill-sky {
+    background-image: var(--grad-sky);
+    color: #fff;
+    box-shadow: var(--glow-sky);
+  }
+  .fill-amber {
+    background-image: var(--grad-amber);
+    color: #fff;
+    box-shadow: var(--glow-amber);
+  }
+  .fill-rose {
+    background-image: var(--grad-rose);
+    color: #fff;
+    box-shadow: var(--glow-rose);
+  }
 
   /* --- surfaces ----------------------------------------------------------- */
   .card {
-    @apply rounded-2xl bg-surface shadow-card;
+    @apply rounded-2xl shadow-card;
+    background-image: var(--card-sheen);
   }
   .card-hover {
-    @apply transition-shadow duration-150 hover:shadow-md;
+    @apply transition-[box-shadow,transform] duration-200;
+  }
+  .card-hover:hover {
+    @apply shadow-md;
+    transform: translateY(-1px);
+  }
+
+  /* Frosted panel. Reserved for chrome that floats over scrolling content -
+     headers, tab bars, sheets and banners - because backdrop-filter is the
+     most expensive thing on this page. */
+  .glass {
+    background-color: var(--glass);
+    border-color: var(--glass-line);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+    backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+  }
+  .glass-strong {
+    background-color: var(--glass-strong);
+    border-color: var(--glass-line);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+    backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  }
+
+  /* Soft relief - the raised, tactile treatment for pressable tiles. */
+  .relief {
+    box-shadow: var(--relief);
+  }
+  .relief-sm {
+    box-shadow: var(--relief-sm);
+  }
+  .relief-press {
+    box-shadow: var(--relief-sm);
+    transition: box-shadow 150ms ease, transform 150ms ease;
+  }
+  .relief-press:active {
+    box-shadow: var(--relief-inset);
+    transform: translateY(1px);
+  }
+  .relief-inset {
+    box-shadow: var(--relief-inset);
   }
   .card-outline {
     @apply rounded-2xl border border-line bg-surface;
@@ -278,8 +407,52 @@
 }
 
 @layer utilities {
+  /* The three soft colour fields behind everything. */
+  .ambient-fields {
+    background-image:
+      radial-gradient(58rem 30rem at 8% -8%, var(--ambient-1) 0%, transparent 62%),
+      radial-gradient(46rem 28rem at 108% 6%, var(--ambient-2) 0%, transparent 58%),
+      radial-gradient(44rem 32rem at 46% 108%, var(--ambient-3) 0%, transparent 60%);
+  }
+  /* A faint dot grid, faded out towards the edges. */
+  .ambient-dots {
+    background-image: radial-gradient(var(--ambient-dot) 1px, transparent 1px);
+    background-size: 22px 22px;
+    -webkit-mask-image: radial-gradient(70% 60% at 50% 35%, #000 0%, transparent 100%);
+    mask-image: radial-gradient(70% 60% at 50% 35%, #000 0%, transparent 100%);
+  }
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   .pb-safe { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.5rem); }
   .pt-safe { padding-top: calc(env(safe-area-inset-top, 0px) + 0.5rem); }
+}
+
+/* ---------------------------------------------------------------------------
+   Degrade gracefully: browsers without backdrop-filter get a solid panel, and
+   anyone who has asked for less transparency or motion gets it.
+   --------------------------------------------------------------------------- */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass,
+  .glass-strong {
+    background-color: var(--surface);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass,
+  .glass-strong {
+    background-color: var(--surface);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

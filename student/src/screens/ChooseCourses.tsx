@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Check, Minus, Plus } from 'lucide-react';
 import { useData } from '../hooks/useData';
+import AmbientBackground from '../components/AmbientBackground';
 import { ScreenHeader, Stepper } from '../components/ui';
 import { toneOf } from '../lib/theme';
 
@@ -28,7 +29,8 @@ export default function ChooseCourses({
   }
 
   return (
-    <div className="flex min-h-[100dvh] flex-col bg-canvas">
+    <div className="flex min-h-[100dvh] flex-col">
+      <AmbientBackground />
       <div className="px-4 pt-safe">
         <div className="pt-3">
           <Stepper steps={4} current={1} />
@@ -84,7 +86,7 @@ export default function ChooseCourses({
                         onClick={() => toggleUniversity(exam.id, university.id)}
                         aria-pressed={active}
                         className={`${toneOf(university.colorTheme)} relative flex flex-col items-center gap-2 rounded-xl border-2 px-2 py-3 transition-colors ${
-                          active ? 'tone-border bg-surface' : 'border-line bg-surface'
+                          active ? 'tone-border bg-surface shadow-card' : 'relief-press border-transparent bg-surface'
                         }`}
                       >
                         {active && (
@@ -111,7 +113,7 @@ export default function ChooseCourses({
         </p>
       </div>
 
-      <div className="fixed bottom-0 left-1/2 w-full max-w-md -translate-x-1/2 border-t border-line bg-surface px-4 pb-safe pt-3">
+      <div className="glass fixed bottom-0 left-1/2 w-full max-w-md -translate-x-1/2 border-t px-4 pb-safe pt-3">
         <button
           type="button"
           className="btn-primary w-full"

@@ -11,19 +11,23 @@ interface Props {
 function QuickAction({
   icon,
   label,
-  color,
+  fill,
   onClick,
 }: {
   icon: ReactNode;
   label: string;
-  color: string;
+  /** One of the gradient fill classes: fill-sky, fill-amber, fill-rose. */
+  fill: string;
   onClick: () => void;
 }) {
   return (
-    <button type="button" onClick={onClick} className="flex w-full flex-col items-center gap-2">
+    <button
+      type="button"
+      onClick={onClick}
+      className="group flex w-full flex-col items-center gap-2 transition-transform active:scale-95"
+    >
       <span
-        className="flex h-14 w-14 items-center justify-center rounded-full text-white shadow-sm"
-        style={{ backgroundColor: color }}
+        className={`${fill} flex h-14 w-14 items-center justify-center rounded-full transition-transform duration-200 group-hover:-translate-y-0.5`}
       >
         {icon}
       </span>
@@ -51,7 +55,7 @@ function ActionRow({
       onClick={onClick}
       className="card card-hover flex w-full items-center gap-3.5 p-4 text-left"
     >
-      <span className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-surface-3 text-muted">
+      <span className="relief relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-surface text-muted">
         {icon}
         {badge && (
           <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand px-1 text-[9px] font-bold text-white">
@@ -63,7 +67,7 @@ function ActionRow({
         {subtitle && <span className="block text-2xs text-subtle">{subtitle}</span>}
         <span className="block truncate text-sm font-semibold">{title}</span>
       </span>
-      <span className="icon-btn bg-brand text-white shadow-sm">
+      <span className="icon-btn fill-brand">
         <ChevronRight className="h-4 w-4" strokeWidth={2.5} />
       </span>
     </button>
@@ -98,7 +102,7 @@ export default function Home({ onOpen }: Props) {
         <button
           type="button"
           aria-label="Notifications"
-          className="icon-btn relative bg-surface text-muted shadow-xs"
+          className="icon-btn relief-press relative bg-surface text-muted"
         >
           <Bell className="h-4 w-4" />
           {attempts.length === 0 && (
@@ -112,19 +116,19 @@ export default function Home({ onOpen }: Props) {
         <QuickAction
           icon={<PlayCircle className="h-6 w-6" />}
           label="Register for Demo Class"
-          color="var(--sky)"
+          fill="fill-sky"
           onClick={() => onOpen('demo')}
         />
         <QuickAction
           icon={<FileQuestion className="h-6 w-6" />}
           label="Solve free Sample Questions"
-          color="var(--amber)"
+          fill="fill-amber"
           onClick={() => onOpen('sample')}
         />
         <QuickAction
           icon={<MessageCircleQuestion className="h-6 w-6" />}
           label="Ask your Doubt"
-          color="var(--rose)"
+          fill="fill-rose"
           onClick={() => onOpen('doubt')}
         />
       </section>

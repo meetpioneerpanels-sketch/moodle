@@ -41,7 +41,7 @@ export function Modal({ open, title, subtitle, onClose, children, footer, wide }
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className={`relative z-10 flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-2xl border border-line bg-surface shadow-lg animate-scale-in sm:rounded-2xl ${
+        className={`glass-strong relative z-10 flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-2xl border shadow-lg animate-scale-in sm:rounded-2xl ${
           wide ? 'sm:max-w-2xl' : 'sm:max-w-md'
         }`}
       >
@@ -61,7 +61,7 @@ export function Modal({ open, title, subtitle, onClose, children, footer, wide }
         </header>
         <div className="flex-1 overflow-y-auto px-5 pb-5">{children}</div>
         {footer && (
-          <footer className="flex flex-wrap justify-end gap-2 border-t border-line bg-surface-2 px-5 py-3.5">
+          <footer className="flex flex-wrap justify-end gap-2 border-t border-line px-5 py-3.5">
             {footer}
           </footer>
         )}
@@ -122,8 +122,8 @@ interface EmptyStateProps {
 
 export function EmptyState({ icon, emoji, title, description, action }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-line px-6 py-14 text-center">
-      <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-3 text-subtle">
+    <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-line px-6 py-14 text-center">
+      <span className="relief flex h-10 w-10 items-center justify-center rounded-full bg-surface text-subtle">
         {icon ?? <span className="text-lg">{emoji ?? '·'}</span>}
       </span>
       <div>
@@ -200,8 +200,8 @@ export function Toggle({
       aria-checked={checked}
       aria-label={label}
       onClick={(event) => onChange(!checked, event)}
-      className={`relative h-5 w-9 shrink-0 rounded-full transition-colors duration-150 disabled:opacity-40 ${
-        checked ? 'bg-accent' : 'bg-line-strong'
+      className={`relative h-5 w-9 shrink-0 rounded-full transition-all duration-150 disabled:opacity-40 ${
+        checked ? 'fill-brand' : 'relief-inset bg-surface-3'
       }`}
     >
       <span
@@ -215,7 +215,7 @@ export function Toggle({
 
 export function RoleChip({ role }: { role: string }) {
   const styles: Record<string, string> = {
-    admin: 'bg-accent-soft text-accent-on-soft',
+    admin: 'bg-brand-soft text-brand-on-soft',
     teacher: 'bg-surface-3 text-fg',
     student: 'bg-surface-3 text-muted',
   };
@@ -233,7 +233,7 @@ export function Avatar({ name, size = 'md' }: { name: string; size?: 'sm' | 'md'
     size === 'lg' ? 'h-16 w-16 text-lg' : size === 'sm' ? 'h-7 w-7 text-2xs' : 'h-8 w-8 text-xs';
   return (
     <span
-      className={`flex shrink-0 items-center justify-center rounded-full bg-accent-soft font-medium text-accent-on-soft ${dimensions}`}
+      className={`flex shrink-0 items-center justify-center rounded-full bg-brand-soft font-medium text-brand-on-soft ${dimensions}`}
       aria-hidden="true"
     >
       {initials || '·'}
@@ -257,7 +257,7 @@ export function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label={resolved === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-      className="flex h-8 w-8 items-center justify-center rounded-md text-muted transition-colors hover:bg-surface-3 hover:text-fg"
+      className="relief-press flex h-8 w-8 items-center justify-center rounded-md bg-surface text-muted transition-colors hover:text-fg"
     >
       {resolved === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
     </button>
@@ -268,7 +268,7 @@ export function ThemeToggle() {
 export function ThemePicker() {
   const { preference, setPreference } = useTheme();
   return (
-    <div className="inline-flex rounded-lg border border-line bg-surface-2 p-0.5">
+    <div className="relief-inset inline-flex rounded-lg bg-surface-2 p-0.5">
       {THEME_OPTIONS.map(({ value, label, icon: Icon }) => (
         <button
           key={value}
@@ -277,7 +277,7 @@ export function ThemePicker() {
           aria-pressed={preference === value}
           className={`inline-flex items-center gap-1.5 rounded-[7px] px-3 py-1.5 text-[13px] font-medium transition-colors ${
             preference === value
-              ? 'bg-surface text-fg shadow-xs'
+              ? 'relief-sm bg-surface text-fg'
               : 'text-muted hover:text-fg'
           }`}
         >

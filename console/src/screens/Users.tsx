@@ -31,7 +31,7 @@ export default function Users() {
 
   const roleSelect = (id: string, name: string, role: Role) => (
     <select
-      className="rounded-md border border-line bg-surface px-2 py-1 text-[13px] capitalize text-fg transition-colors hover:bg-surface-3 focus:border-accent focus:outline-none"
+      className="rounded-md border border-line bg-surface px-2 py-1 text-[13px] capitalize text-fg transition-colors hover:bg-surface-3 focus:border-brand focus:outline-none"
       value={role}
       aria-label={`Role for ${name}`}
       onChange={async (event) => {

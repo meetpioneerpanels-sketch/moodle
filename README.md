@@ -107,7 +107,10 @@ natively.
 
 Built from the product design reference: a soft lavender-grey canvas, white cards on a low
 wide shadow, fully rounded buttons, and a crimson brand colour with amber / sky / rose
-supporting accents. Poppins throughout. Everything runs on CSS-variable tokens, so the
+supporting accents. Poppins throughout. On top of that base sit four layers - an ambient
+gradient canvas with a faint dot grid, frosted glass on the floating chrome, soft-relief
+(neumorphic) treatment on tactile controls, and gradient fills with matching glows on
+primary actions and chart marks. Everything runs on CSS-variable tokens, so the
 light/dark/system switch in both apps needs no per-component branching, and each subject's
 colour is a `tone-*` class that stays legible in both themes. Charts are hand-rolled SVG -
 donut rings, concentric multi-rings and grouped bars - with no charting dependency.

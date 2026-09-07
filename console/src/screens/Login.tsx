@@ -3,6 +3,7 @@ import { ArrowRight, Loader2 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { isDemoMode } from '../firebase';
 import { ThemeToggle } from '../components/ui';
+import AmbientBackground from '../components/AmbientBackground';
 import type { Role } from '../types';
 
 interface FieldErrors {
@@ -53,11 +54,12 @@ export default function Login() {
   }
 
   return (
-    <div className="flex min-h-screen bg-canvas">
+    <div className="flex min-h-screen">
+      <AmbientBackground />
       {/* Brand column */}
-      <div className="relative hidden w-[44%] max-w-xl flex-col justify-between border-r border-line bg-surface-2 px-12 py-12 lg:flex">
+      <div className="glass relative hidden w-[44%] max-w-xl flex-col justify-between border-r px-12 py-12 lg:flex">
         <div className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-accent text-[13px] font-semibold text-accent-fg">
+          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-brand text-[13px] font-semibold text-white">
             E
           </span>
           <span className="text-sm font-semibold">EduHub</span>
@@ -88,7 +90,7 @@ export default function Login() {
       <div className="flex flex-1 flex-col px-5 py-6 sm:px-10">
         <div className="flex items-center justify-between lg:justify-end">
           <span className="flex items-center gap-2 lg:hidden">
-            <span className="flex h-7 w-7 items-center justify-center rounded-md bg-accent text-[13px] font-semibold text-accent-fg">
+            <span className="flex h-7 w-7 items-center justify-center rounded-md bg-brand text-[13px] font-semibold text-white">
               E
             </span>
             <span className="text-sm font-semibold">EduHub</span>
@@ -175,7 +177,7 @@ export default function Login() {
                         aria-pressed={role === option}
                         className={`h-10 rounded-lg border text-[13px] font-medium capitalize transition-colors ${
                           role === option
-                            ? 'border-accent bg-accent-soft text-accent-on-soft'
+                            ? 'border-brand bg-brand-soft text-brand-on-soft'
                             : 'border-line text-muted hover:bg-surface-3'
                         }`}
                       >
@@ -206,7 +208,7 @@ export default function Login() {
               {mode === 'signin' ? "Don't have an account?" : 'Already have an account?'}{' '}
               <button
                 type="button"
-                className="font-medium text-accent hover:underline"
+                className="font-medium text-brand hover:underline"
                 onClick={() => {
                   setMode(mode === 'signin' ? 'signup' : 'signin');
                   setErrors({});

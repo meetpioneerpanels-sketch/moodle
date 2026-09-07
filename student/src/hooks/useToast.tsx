@@ -25,7 +25,7 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 const ICONS: Record<ToastKind, ReactNode> = {
   success: <CheckCircle2 className="h-4 w-4 text-success" />,
   error: <AlertCircle className="h-4 w-4 text-danger" />,
-  info: <Info className="h-4 w-4 text-accent" />,
+  info: <Info className="h-4 w-4 text-brand" />,
 };
 
 export function ToastProvider({ children }: { children: ReactNode }) {

@@ -6,6 +6,15 @@ shadow, a crimson brand colour used for primary actions, and amber / sky / rose 
 the supporting roles. Everything is token-based, so light and dark stay in step and a
 rebrand is a change to a handful of variables.
 
+Four effects sit on top of that base, each with a job:
+
+| Layer | What it is | Where it is used |
+| --- | --- | --- |
+| **Ambient canvas** | Three soft colour fields plus a faint dot grid behind everything | One fixed layer per full-page screen |
+| **Glass** | Translucent panel with a backdrop blur | Chrome that floats over scrolling content |
+| **Soft relief** | Paired light/dark shadow that raises or insets a surface | Tactile controls - tiles, pills, toggles |
+| **Gradient** | A light-to-dark sweep plus a coloured glow | Primary actions, accent circles, chart marks |
+
 ## Tokens
 
 Defined once in each app's `src/index.css` on `:root`, redefined under `[data-theme="dark"]`,
@@ -30,6 +39,67 @@ hard-codes a hex value.
 
 Each accent has a `-soft` companion for tinted backgrounds, so a status never relies on a
 raw opacity modifier.
+
+## Ambient canvas
+
+`AmbientBackground` renders one fixed, `pointer-events-none` layer per full-page screen:
+
+```html
+<div class="ambient-fields"></div>  <!-- three radial colour fields -->
+<div class="ambient-dots"></div>    <!-- 22px dot grid, radially masked -->
+```
+
+Both are plain CSS gradients rather than a stack of blurred elements, because blurring
+several large nodes is the expensive way to build this and gradients cost nothing to
+composite. The fields are warm pink top-left, cool blue right and amber bottom in light;
+brand red, sky and violet in dark. The dot grid is masked to fade out towards the edges so
+it never competes with content.
+
+Screen wrappers are transparent - the canvas colour lives on `body`, so an opaque wrapper
+would paint straight over the ambient layer.
+
+## Glass
+
+`.glass` and `.glass-strong` are translucent panels with `backdrop-filter: blur(18px)
+saturate(150%)`.
+
+They are deliberately **restricted to chrome that floats over scrolling content** - app
+headers, the bottom tab bar, banners, sheets and modals. `backdrop-filter` is the most
+expensive property on the page, and putting it on list rows or cards (there can be dozens
+on screen) is what makes this pattern stutter on a mid-range Android device. Cards get the
+`--card-sheen` gradient instead, which is free.
+
+Two fallbacks keep it honest:
+
+```css
+@supports not (backdrop-filter: blur(1px))      { .glass { background: var(--surface); } }
+@media (prefers-reduced-transparency: reduce)   { .glass { background: var(--surface); } }
+```
+
+## Soft relief
+
+`.relief`, `.relief-sm` and `.relief-inset` are the neumorphic pair - a cool shadow below
+right, a warm highlight above left - and `.relief-press` swaps raised for inset on `:active`,
+so a tile physically depresses under a thumb.
+
+Relief is used only where something is meant to feel pressable or recessed: quick-action
+tiles, chapter pills, the theme picker's well and knob, icon buttons, unselected university
+tiles, and the solution box (inset, because it is a container rather than a control). It is
+never used for text contrast - relief on a label is what makes classic neumorphism
+unreadable.
+
+## Gradients
+
+`--grad-brand`, `--grad-sky`, `--grad-amber` and `--grad-rose` are 135° sweeps, each paired
+with a matching `--glow-*` shadow. `.fill-brand` / `.fill-sky` / `.fill-amber` /
+`.fill-rose` apply the pair in one class, and are used for primary buttons, the raised
+centre action, the home quick actions, the stepper's reached steps, active chapter pills
+and the publish toggle.
+
+Charts get the same treatment: donut and multi-ring arcs are stroked with an SVG
+`linearGradient` and carry a `drop-shadow` tinted to their own colour, and bars are filled
+with a vertical fade. The gradient ids are generated from a module counter, because SVG ids
+are document-global and two donuts on one screen would otherwise share a definition.
 
 ## Type
 
@@ -95,8 +165,11 @@ app has a toggle on Home and the picker in the Menu tab.
 Short and functional: 150ms colour transitions, a 180ms scale-in for dialogs, a 200ms
 slide-up for sheets and toasts, a 600ms eased sweep on donut rings, and a linear
 one-second step on the question countdown so it reads as a clock rather than an animation.
-The confetti burst on a strong test result and on lesson completion is the only purely
-celebratory motion, and it respects `prefers-reduced-motion`.
+Cards lift 1px on hover; relief tiles sink on press. The confetti burst on a strong test
+result and on lesson completion is the only purely celebratory motion.
+
+`prefers-reduced-motion: reduce` collapses every animation and transition to 0.01ms
+globally, so the whole system - not just confetti - honours the setting.
 
 ## Accessibility
 
@@ -104,3 +177,8 @@ Focus is never removed - `*:focus-visible` draws a 3px brand ring on every inter
 element. Colour is never the only signal: a wrong answer carries an X icon as well as red,
 a correct one a check; locked tests carry a padlock and the word "Locked". Body and
 secondary text meet WCAG AA against their surfaces in both themes.
+
+The decorative layers are all opt-out. Translucency degrades to a solid panel under
+`prefers-reduced-transparency`, motion collapses under `prefers-reduced-motion`, and text
+never sits directly on the ambient gradient - it is always on a card or a glass panel with
+enough opacity to hold contrast over the busiest part of the backdrop.

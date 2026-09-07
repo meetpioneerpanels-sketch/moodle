@@ -42,7 +42,7 @@ export default function TestResult({
   );
 
   return (
-    <div className="min-h-[100dvh] bg-canvas pb-28">
+    <div className="min-h-[100dvh] pb-28">
       <ScreenHeader title="Score and Stats" onBack={onDone} />
 
       <div className="space-y-4 px-4">
@@ -212,7 +212,7 @@ export default function TestResult({
         )}
       </div>
 
-      <div className="fixed bottom-0 left-1/2 w-full max-w-md -translate-x-1/2 border-t border-line bg-surface px-4 pb-safe pt-3">
+      <div className="glass fixed bottom-0 left-1/2 w-full max-w-md -translate-x-1/2 border-t px-4 pb-safe pt-3">
         <button type="button" className="btn-primary w-full" onClick={onDone}>
           Done
         </button>

@@ -18,7 +18,7 @@ export default function LiveClasses({ mode, onBack }: Props) {
   const title = mode === 'live' ? 'Live Classes' : 'Recorded Courses';
 
   return (
-    <div className="min-h-[100dvh] bg-canvas pb-8">
+    <div className="min-h-[100dvh] pb-8">
       <ScreenHeader title={title} onBack={onBack} />
 
       <div className="space-y-4 px-4">
@@ -35,13 +35,13 @@ export default function LiveClasses({ mode, onBack }: Props) {
             return (
               <article key={item.id} className={`${toneOf(university?.colorTheme)} card p-4`}>
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-xl bg-surface-2 p-3">
+                  <div className="relief-inset rounded-xl bg-surface-2 p-3">
                     <p className="flex items-center gap-1.5 text-2xs text-subtle">
                       <Calendar className="h-3.5 w-3.5" /> Start Date
                     </p>
                     <p className="mt-1 text-[13px] font-semibold">{formatDate(item.startDate)}</p>
                   </div>
-                  <div className="rounded-xl bg-surface-2 p-3">
+                  <div className="relief-inset rounded-xl bg-surface-2 p-3">
                     <p className="flex items-center gap-1.5 text-2xs text-subtle">
                       <Calendar className="h-3.5 w-3.5" /> End Date
                     </p>

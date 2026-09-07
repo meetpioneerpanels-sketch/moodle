@@ -34,7 +34,7 @@ export default function AskDoubt({ onBack }: { onBack: () => void }) {
   }
 
   return (
-    <div className="min-h-[100dvh] bg-canvas pb-8">
+    <div className="min-h-[100dvh] pb-8">
       <ScreenHeader title="Ask your Doubt" onBack={onBack} />
 
       <div className="space-y-4 px-4">
@@ -103,7 +103,7 @@ export default function AskDoubt({ onBack }: { onBack: () => void }) {
                     </div>
                     <p className="mt-2 text-[13px] leading-relaxed">{doubt.question}</p>
                     {doubt.answer && (
-                      <p className="mt-2.5 flex gap-2 rounded-xl bg-surface-2 p-3 text-[13px] leading-relaxed text-muted">
+                      <p className="relief-inset mt-2.5 flex gap-2 rounded-xl bg-surface-2 p-3 text-[13px] leading-relaxed text-muted">
                         <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-success" />
                         {doubt.answer}
                       </p>

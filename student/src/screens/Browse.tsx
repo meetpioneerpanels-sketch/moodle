@@ -48,7 +48,7 @@ export default function Browse({ onOpenCourse }: { onOpenCourse: (courseId: stri
             aria-pressed={category === chip}
             className={`h-8 shrink-0 rounded-full border px-3 text-[13px] font-medium transition-colors ${
               category === chip
-                ? 'border-accent bg-accent-soft text-accent-on-soft'
+                ? 'border-brand bg-brand-soft text-brand-on-soft'
                 : 'border-line text-muted'
             }`}
           >
@@ -66,7 +66,7 @@ export default function Browse({ onOpenCourse }: { onOpenCourse: (courseId: stri
           description="Try another search or category."
         />
       ) : (
-        <ul className="divide-y divide-line overflow-hidden rounded-xl border border-line">
+        <ul className="card divide-y divide-line overflow-hidden">
           {visible.map((course) => {
             const total = lessons.filter((lesson) => lesson.courseId === course.id).length;
             return (

@@ -1,5 +1,6 @@
 import { Check, X } from 'lucide-react';
 import { useData } from '../hooks/useData';
+import AmbientBackground from '../components/AmbientBackground';
 import { ScreenHeader, Stepper } from '../components/ui';
 
 interface Props {
@@ -13,7 +14,8 @@ export default function SelectPackage({ selectedPackage, onSelect, onBack, onNex
   const { packages } = useData();
 
   return (
-    <div className="flex min-h-[100dvh] flex-col bg-canvas">
+    <div className="flex min-h-[100dvh] flex-col">
+      <AmbientBackground />
       <div className="px-4 pt-safe">
         <div className="pt-3">
           <Stepper steps={4} current={2} />
@@ -29,8 +31,8 @@ export default function SelectPackage({ selectedPackage, onSelect, onBack, onNex
             return (
               <article
                 key={item.id}
-                className={`flex flex-col rounded-2xl border-2 bg-surface p-4 shadow-card transition-colors ${
-                  active ? 'border-brand' : 'border-transparent'
+                className={`card flex flex-col border-2 p-4 transition-all ${
+                  active ? 'border-brand shadow-md' : 'border-transparent'
                 }`}
               >
                 <span
@@ -72,10 +74,8 @@ export default function SelectPackage({ selectedPackage, onSelect, onBack, onNex
                 <button
                   type="button"
                   onClick={() => onSelect(item.id)}
-                  className={`mt-4 h-9 rounded-full text-[13px] font-semibold transition-colors ${
-                    active
-                      ? 'bg-sky text-white'
-                      : 'border border-sky/40 bg-transparent text-sky'
+                  className={`mt-4 h-9 rounded-full text-[13px] font-semibold transition-all ${
+                    active ? 'fill-sky' : 'relief-press bg-surface text-sky'
                   }`}
                 >
                   {active ? 'Selected' : 'Select'}
@@ -90,7 +90,7 @@ export default function SelectPackage({ selectedPackage, onSelect, onBack, onNex
         </p>
       </div>
 
-      <div className="fixed bottom-0 left-1/2 w-full max-w-md -translate-x-1/2 border-t border-line bg-surface px-4 pb-safe pt-3">
+      <div className="glass fixed bottom-0 left-1/2 w-full max-w-md -translate-x-1/2 border-t px-4 pb-safe pt-3">
         <button type="button" className="btn-primary w-full" disabled={!selectedPackage} onClick={onNext}>
           Next
         </button>

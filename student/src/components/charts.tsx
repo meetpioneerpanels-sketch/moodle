@@ -1,8 +1,22 @@
+import { useMemo } from 'react';
+
 // -----------------------------------------------------------------------------
 // Dependency-free SVG charts, built to match the product design: thick rounded
 // donut rings, a concentric multi-ring for per-subject progress, and compact
 // bar charts. All colours come from the theme tokens so both themes work.
 // -----------------------------------------------------------------------------
+
+/** Turns a flat colour into a light-to-dark sweep for a ring or bar fill. */
+function gradientStops(color: string): { from: string; to: string } {
+  return { from: `${color}`, to: `${color}` };
+}
+
+let gradientSeed = 0;
+/** SVG gradient ids must be unique per document, not per component instance. */
+function nextGradientId(prefix: string): string {
+  gradientSeed += 1;
+  return `${prefix}-${gradientSeed}`;
+}
 
 interface DonutProps {
   /** 0-100. */
@@ -19,11 +33,19 @@ export function Donut({ percent, label, caption, color, size = 72, stroke = 7 }:
   const radius = (size - stroke) / 2;
   const circumference = 2 * Math.PI * radius;
   const clamped = Math.max(0, Math.min(100, percent));
+  const gradientId = useMemo(() => nextGradientId('donut'), []);
+  const stops = gradientStops(color);
 
   return (
     <div className="flex flex-col items-center gap-1.5">
       <div className="relative" style={{ width: size, height: size }}>
         <svg width={size} height={size} className="-rotate-90">
+          <defs>
+            <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor={stops.from} stopOpacity="0.75" />
+              <stop offset="100%" stopColor={stops.to} stopOpacity="1" />
+            </linearGradient>
+          </defs>
           <circle
             cx={size / 2}
             cy={size / 2}
@@ -37,12 +59,15 @@ export function Donut({ percent, label, caption, color, size = 72, stroke = 7 }:
             cy={size / 2}
             r={radius}
             fill="none"
-            stroke={color}
+            stroke={`url(#${gradientId})`}
             strokeWidth={stroke}
             strokeLinecap="round"
             strokeDasharray={circumference}
             strokeDashoffset={circumference * (1 - clamped / 100)}
-            style={{ transition: 'stroke-dashoffset 600ms cubic-bezier(0.16, 1, 0.3, 1)' }}
+            style={{
+              transition: 'stroke-dashoffset 600ms cubic-bezier(0.16, 1, 0.3, 1)',
+              filter: `drop-shadow(0 2px 5px ${color}55)`,
+            }}
           />
         </svg>
         <span className="absolute inset-0 flex items-center justify-center text-lg font-semibold tabular-nums">
@@ -75,10 +100,19 @@ export function MultiRing({
 }) {
   const stroke = 9;
   const gap = 4;
+  const gradientBase = useMemo(() => nextGradientId('ring'), []);
 
   return (
     <div className="relative" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
+        <defs>
+          {rings.map((ring, index) => (
+            <linearGradient key={ring.label} id={`${gradientBase}-${index}`} x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor={ring.color} stopOpacity="0.7" />
+              <stop offset="100%" stopColor={ring.color} stopOpacity="1" />
+            </linearGradient>
+          ))}
+        </defs>
         {rings.map((ring, index) => {
           const radius = (size - stroke) / 2 - index * (stroke + gap);
           if (radius <= stroke) return null;
@@ -98,7 +132,7 @@ export function MultiRing({
                 cy={size / 2}
                 r={radius}
                 fill="none"
-                stroke={ring.color}
+                stroke={`url(#${gradientBase}-${index})`}
                 strokeWidth={stroke}
                 strokeLinecap="round"
                 strokeDasharray={circumference}
@@ -106,6 +140,7 @@ export function MultiRing({
                 style={{
                   transition: 'stroke-dashoffset 700ms cubic-bezier(0.16, 1, 0.3, 1)',
                   transitionDelay: `${index * 60}ms`,
+                  filter: `drop-shadow(0 1px 4px ${ring.color}44)`,
                 }}
               />
             </g>
@@ -193,7 +228,8 @@ export function BarChart({
                       className="w-full max-w-[10px] rounded-t-[3px] transition-[height] duration-500"
                       style={{
                         height: `${Math.max(value > 0 ? 3 : 0, (value / ceiling) * height)}px`,
-                        backgroundColor: item.color,
+                        backgroundImage: `linear-gradient(180deg, ${item.color} 0%, ${item.color}b0 100%)`,
+                        boxShadow: value > 0 ? `0 2px 6px -2px ${item.color}80` : undefined,
                       }}
                     />
                   );

@@ -40,7 +40,7 @@ export function Sheet({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="relative z-10 flex max-h-[88vh] w-full flex-col overflow-hidden rounded-t-3xl bg-surface shadow-lg animate-slide-up sm:max-w-md sm:rounded-3xl"
+        className="glass-strong relative z-10 flex max-h-[88vh] w-full flex-col overflow-hidden rounded-t-3xl border shadow-lg animate-slide-up sm:max-w-md sm:rounded-3xl"
       >
         <header className="flex items-center gap-3 px-5 pb-3 pt-5">
           <h2 className="text-base font-semibold">{title}</h2>
@@ -48,7 +48,7 @@ export function Sheet({
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="icon-btn ml-auto bg-surface-3 text-muted"
+            className="icon-btn relief-press ml-auto bg-surface text-muted"
           >
             <X className="h-4 w-4" />
           </button>
@@ -79,7 +79,7 @@ export function ScreenHeader({
           type="button"
           onClick={onBack}
           aria-label="Go back"
-          className="icon-btn bg-brand text-white shadow-sm"
+          className="icon-btn fill-brand"
         >
           <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2.5}>
             <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
@@ -106,9 +106,9 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded-2xl bg-surface px-6 py-12 text-center shadow-card">
+    <div className="card flex flex-col items-center justify-center gap-3 px-6 py-12 text-center">
       {icon && (
-        <span className="flex h-11 w-11 items-center justify-center rounded-full bg-surface-3 text-muted">
+        <span className="relief flex h-11 w-11 items-center justify-center rounded-full bg-surface text-muted">
           {icon}
         </span>
       )}
@@ -247,12 +247,12 @@ export function Stepper({ steps, current }: { steps: number; current: number }) 
         return (
           <div key={step} className="flex flex-1 items-center last:flex-none">
             <span
-              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-2xs font-semibold transition-colors ${
+              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-2xs font-semibold transition-all ${
                 done
-                  ? 'bg-amber text-white'
+                  ? 'fill-amber'
                   : active
-                    ? 'bg-amber text-white ring-4 ring-amber-soft'
-                    : 'bg-surface-3 text-subtle'
+                    ? 'fill-amber ring-4 ring-amber-soft'
+                    : 'relief-sm bg-surface text-subtle'
               }`}
             >
               {done ? <Check className="h-3 w-3" strokeWidth={3} /> : step}
@@ -321,8 +321,8 @@ export function PillTabs<T extends string>({
           type="button"
           onClick={() => onChange(tab)}
           aria-pressed={active === tab}
-          className={`h-8 shrink-0 rounded-lg px-4 text-[13px] font-semibold transition-colors ${
-            active === tab ? 'bg-amber text-white' : 'bg-surface text-muted shadow-xs'
+          className={`h-8 shrink-0 rounded-lg px-4 text-[13px] font-semibold transition-all ${
+            active === tab ? 'fill-amber' : 'relief-press bg-surface text-muted'
           }`}
         >
           {tab}
@@ -347,7 +347,7 @@ export function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label={resolved === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-      className="icon-btn text-muted"
+      className="icon-btn relief-press bg-surface text-muted"
     >
       {resolved === 'dark' ? <Sun className="h-4.5 w-4.5" style={{ width: 18, height: 18 }} /> : <Moon style={{ width: 18, height: 18 }} />}
     </button>
@@ -357,7 +357,7 @@ export function ThemeToggle() {
 export function ThemePicker() {
   const { preference, setPreference } = useTheme();
   return (
-    <div className="flex rounded-xl bg-surface-3 p-1">
+    <div className="relief-inset flex rounded-xl bg-surface-2 p-1">
       {THEME_OPTIONS.map(({ value, label, icon: Icon }) => (
         <button
           key={value}
@@ -365,7 +365,7 @@ export function ThemePicker() {
           onClick={() => setPreference(value)}
           aria-pressed={preference === value}
           className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-[13px] font-medium transition-colors ${
-            preference === value ? 'bg-surface text-fg shadow-xs' : 'text-muted'
+            preference === value ? 'relief-sm bg-surface text-fg' : 'text-muted'
           }`}
         >
           <Icon className="h-3.5 w-3.5" />

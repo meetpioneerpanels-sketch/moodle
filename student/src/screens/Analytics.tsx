@@ -57,8 +57,8 @@ export default function Analytics() {
                 type="button"
                 onClick={() => setFilter(item)}
                 aria-pressed={filter === item}
-                className={`flex shrink-0 flex-col items-center gap-1.5 rounded-xl px-3 py-2 transition-colors ${
-                  filter === item ? 'bg-surface shadow-card' : ''
+                className={`flex shrink-0 flex-col items-center gap-1.5 rounded-xl px-3 py-2 transition-all ${
+                  filter === item ? 'card' : ''
                 }`}
               >
                 <span
@@ -145,7 +145,7 @@ export default function Analytics() {
                     },
                   ].map((stat) => (
                     <div key={stat.label} className="flex flex-col items-center gap-1.5 text-center">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-soft text-brand">
+                      <span className="relief flex h-10 w-10 items-center justify-center rounded-full bg-surface text-brand">
                         {stat.icon}
                       </span>
                       <span className="text-sm font-semibold tabular-nums">{stat.value}</span>

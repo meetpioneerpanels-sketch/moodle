@@ -3,6 +3,7 @@ import { Loader2 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { isDemoMode } from '../firebase';
 import { ThemeToggle } from '../components/ui';
+import AmbientBackground from '../components/AmbientBackground';
 import type { Role } from '../types';
 
 export default function Login() {
@@ -42,10 +43,11 @@ export default function Login() {
   }
 
   return (
-    <div className="flex min-h-[100dvh] flex-col bg-canvas">
+    <div className="flex min-h-[100dvh] flex-col">
+      <AmbientBackground />
       <div className="flex items-center justify-between px-4 pt-safe">
         <span className="flex items-center gap-2 pt-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-accent text-[13px] font-semibold text-accent-fg">
+          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-brand text-[13px] font-semibold text-white">
             E
           </span>
           <span className="text-sm font-semibold">EduHub</span>
@@ -131,7 +133,7 @@ export default function Login() {
                     aria-pressed={role === option}
                     className={`h-11 rounded-lg border text-[13px] font-medium capitalize transition-colors ${
                       role === option
-                        ? 'border-accent bg-accent-soft text-accent-on-soft'
+                        ? 'border-brand bg-brand-soft text-brand-on-soft'
                         : 'border-line text-muted'
                     }`}
                   >
@@ -163,7 +165,7 @@ export default function Login() {
           {mode === 'signin' ? 'New here?' : 'Already have an account?'}{' '}
           <button
             type="button"
-            className="font-medium text-accent"
+            className="font-medium text-brand"
             onClick={() => {
               setMode(mode === 'signin' ? 'signup' : 'signin');
               setError('');

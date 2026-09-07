@@ -18,6 +18,7 @@ import Menu from './screens/Menu';
 import Browse from './screens/Browse';
 import CourseDetail from './screens/CourseDetail';
 import LessonPlayer from './screens/LessonPlayer';
+import AmbientBackground from './components/AmbientBackground';
 import { isDemoMode } from './firebase';
 import type { Test, TestAttempt } from './types';
 
@@ -46,7 +47,7 @@ function DemoBanner() {
   const [dismissed, setDismissed] = useState(false);
   if (!isDemoMode || dismissed) return null;
   return (
-    <div className="flex items-center gap-2 bg-surface px-4 py-2 text-2xs text-muted shadow-xs">
+    <div className="glass flex items-center gap-2 border-b px-4 py-2 text-2xs text-muted">
       <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-amber" aria-hidden="true" />
       <p className="flex-1">Demo mode - live sync off</p>
       <button
@@ -65,7 +66,7 @@ function OfflineBanner() {
   const online = useOnline();
   if (online) return null;
   return (
-    <div className="flex items-center gap-2 bg-warning-soft px-4 py-2 text-2xs font-medium text-warning">
+    <div className="flex items-center gap-2 border-b border-line bg-warning-soft px-4 py-2 text-2xs font-medium text-warning">
       <WifiOff className="h-3.5 w-3.5 shrink-0" />
       You are offline - showing downloaded lessons
     </div>
@@ -77,7 +78,7 @@ function InstallBanner() {
   const [dismissed, setDismissed] = useState(false);
   if (!canInstall || dismissed) return null;
   return (
-    <div className="flex items-center gap-2.5 bg-surface px-4 py-2.5 shadow-xs">
+    <div className="glass flex items-center gap-2.5 border-b px-4 py-2.5">
       <p className="flex-1 text-[13px] font-medium">Add EduHub to your home screen</p>
       <button type="button" className="btn-primary btn-sm" onClick={install}>
         Install
@@ -137,7 +138,7 @@ function Shell() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[100dvh] items-center justify-center bg-canvas">
+      <div className="flex min-h-[100dvh] items-center justify-center">
         <div className="flex items-center gap-2.5 text-[13px] text-subtle">
           <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-line border-t-brand" />
           Loading EduHub...
@@ -196,7 +197,8 @@ function Shell() {
   const activeTab: Tab = stack[0]!.kind === 'tab' ? (stack[0] as { tab: Tab }).tab : 'home';
 
   return (
-    <div className="mx-auto flex min-h-[100dvh] max-w-md flex-col bg-canvas">
+    <div className="mx-auto flex min-h-[100dvh] max-w-md flex-col">
+      <AmbientBackground />
       {!immersive && (
         <>
           <DemoBanner />
@@ -264,7 +266,7 @@ function Shell() {
       </main>
 
       {!immersive && (
-        <nav className="fixed bottom-0 left-1/2 z-40 w-full max-w-md -translate-x-1/2 border-t border-line bg-surface pb-safe">
+        <nav className="glass fixed bottom-0 left-1/2 z-40 w-full max-w-md -translate-x-1/2 border-t pb-safe">
           <div className="relative flex">
             {TABS.slice(0, 2).map(({ id, label, icon: Icon }) => (
               <button
@@ -285,7 +287,7 @@ function Shell() {
               <button
                 type="button"
                 onClick={() => push({ kind: 'doubt' })}
-                className="absolute -top-8 left-1/2 flex h-14 w-14 -translate-x-1/2 items-center justify-center rounded-full bg-brand text-white shadow-md transition-transform active:scale-95"
+                className="fill-brand absolute -top-8 left-1/2 flex h-14 w-14 -translate-x-1/2 items-center justify-center rounded-full ring-4 ring-[color:var(--canvas)] transition-transform active:scale-95"
                 aria-label="Ask your Doubt"
               >
                 <MessageCircleQuestion className="h-6 w-6" />

@@ -18,6 +18,7 @@ import CourseEditor from './screens/CourseEditor';
 import TestBank from './screens/TestBank';
 import Users from './screens/Users';
 import Settings from './screens/Settings';
+import AmbientBackground from './components/AmbientBackground';
 import { isDemoMode } from './firebase';
 
 type Tab = 'dashboard' | 'courses' | 'tests' | 'users' | 'settings';
@@ -34,7 +35,7 @@ function DemoBanner() {
   const [dismissed, setDismissed] = useState(false);
   if (!isDemoMode || dismissed) return null;
   return (
-    <div className="flex items-center gap-2 border-b border-line bg-surface-2 px-4 py-2 text-[13px] text-muted">
+    <div className="glass flex items-center gap-2 border-b px-4 py-2 text-[13px] text-muted">
       <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-warning" aria-hidden="true" />
       <p className="min-w-0 flex-1 truncate">
         Demo mode — connect Firebase in{' '}
@@ -62,9 +63,9 @@ function Shell() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-canvas">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="flex items-center gap-2.5 text-[13px] text-subtle">
-          <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-line border-t-accent" />
+          <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-line border-t-brand" />
           Loading EduHub…
         </div>
       </div>
@@ -81,14 +82,15 @@ function Shell() {
   const activeLabel = TABS.find((item) => item.id === tab)?.label ?? '';
 
   return (
-    <div className="flex h-[100dvh] flex-col bg-canvas">
+    <div className="flex h-[100dvh] flex-col">
+      <AmbientBackground />
       <DemoBanner />
 
       <div className="flex min-h-0 flex-1">
         {/* Sidebar */}
-        <aside className="hidden w-56 shrink-0 flex-col gap-1 overflow-y-auto border-r border-line bg-surface-2 px-3 py-4 lg:flex">
+        <aside className="glass hidden w-56 shrink-0 flex-col gap-1 overflow-y-auto border-r px-3 py-4 lg:flex">
           <div className="mb-4 flex items-center gap-2 px-2">
-            <span className="flex h-7 w-7 items-center justify-center rounded-md bg-accent text-[13px] font-semibold text-accent-fg">
+            <span className="fill-brand flex h-7 w-7 items-center justify-center rounded-md text-[13px] font-semibold">
               E
             </span>
             <span className="text-sm font-semibold">EduHub</span>
@@ -101,9 +103,9 @@ function Shell() {
               type="button"
               onClick={() => goToTab(id)}
               aria-current={tab === id ? 'page' : undefined}
-              className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium transition-colors ${
+              className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium transition-all ${
                 tab === id
-                  ? 'bg-surface text-fg shadow-xs'
+                  ? 'relief-sm bg-surface text-fg'
                   : 'text-muted hover:bg-surface-3 hover:text-fg'
               }`}
             >
@@ -122,9 +124,9 @@ function Shell() {
 
         {/* Main column */}
         <div className="flex min-w-0 flex-1 flex-col overflow-y-auto">
-          <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-line bg-canvas/85 px-4 backdrop-blur lg:px-8">
+          <header className="glass sticky top-0 z-30 flex h-14 items-center gap-3 border-b px-4 lg:px-8">
             <span className="flex items-center gap-2 lg:hidden">
-              <span className="flex h-6 w-6 items-center justify-center rounded bg-accent text-2xs font-semibold text-accent-fg">
+              <span className="fill-brand flex h-6 w-6 items-center justify-center rounded text-2xs font-semibold">
                 E
               </span>
               <span className="text-sm font-semibold">EduHub</span>
@@ -173,7 +175,7 @@ function Shell() {
       </div>
 
       {/* Bottom navigation (mobile) */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 flex border-t border-line bg-surface lg:hidden">
+      <nav className="glass fixed bottom-0 left-0 right-0 z-40 flex border-t lg:hidden">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
@@ -181,7 +183,7 @@ function Shell() {
             onClick={() => goToTab(id)}
             aria-current={tab === id ? 'page' : undefined}
             className={`flex flex-1 flex-col items-center gap-1 py-2.5 text-2xs font-medium transition-colors ${
-              tab === id ? 'text-accent' : 'text-subtle'
+              tab === id ? 'text-brand' : 'text-subtle'
             }`}
           >
             <Icon className="h-4.5 w-4.5" style={{ width: 18, height: 18 }} /> {label}

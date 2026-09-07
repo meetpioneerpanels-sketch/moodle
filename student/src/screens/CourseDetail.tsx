@@ -45,7 +45,7 @@ export default function CourseDetail({ courseId, onBack, onOpenLesson }: Props) 
 
   return (
     <div className={`${toneOf(course.colorTheme)} pb-6`}>
-      <header className="border-b border-line bg-surface-2 px-4 pb-5 pt-3">
+      <header className="ambient-fields border-b border-line px-4 pb-5 pt-3">
         <button
           type="button"
           onClick={onBack}
@@ -93,7 +93,7 @@ export default function CourseDetail({ courseId, onBack, onOpenLesson }: Props) 
             description="Your teacher has not added any lessons."
           />
         ) : (
-          <ol className="divide-y divide-line overflow-hidden rounded-xl border border-line">
+          <ol className="card divide-y divide-line overflow-hidden">
             {lessons.map((lesson, index) => {
               const complete = isCompleted(lesson.id);
               return (

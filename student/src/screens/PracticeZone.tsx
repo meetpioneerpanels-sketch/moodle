@@ -30,7 +30,7 @@ export default function PracticeZone({ onBack, onStartTest }: Props) {
   const attemptedIds = new Set(attempts.map((attempt) => attempt.testId));
 
   return (
-    <div className="min-h-[100dvh] bg-canvas pb-28">
+    <div className="min-h-[100dvh] pb-28">
       <ScreenHeader title="Practice Zone" onBack={onBack} />
 
       <div className="space-y-4 px-4">
@@ -68,7 +68,7 @@ export default function PracticeZone({ onBack, onStartTest }: Props) {
             description="Try another chapter or subject."
           />
         ) : (
-          <ul className="divide-y divide-line overflow-hidden rounded-2xl bg-surface shadow-card">
+          <ul className="card divide-y divide-line overflow-hidden">
             {visible.map((test) => (
               <li key={test.id}>
                 <button

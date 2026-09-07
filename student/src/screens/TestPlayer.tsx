@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Bookmark, Clock, MonitorPlay, X } from 'lucide-react';
 import { useData } from '../hooks/useData';
 import { useToast } from '../hooks/useToast';
+import AmbientBackground from '../components/AmbientBackground';
 import { EmptyState } from '../components/ui';
 import { burstConfetti } from '../lib/confetti';
 import type { AttemptAnswer, Test, TestAttempt } from '../types';
@@ -99,7 +100,7 @@ export default function TestPlayer({ test, onExit, onFinished }: Props) {
 
   if (total === 0) {
     return (
-      <div className="min-h-[100dvh] bg-canvas px-4 pt-6">
+      <div className="min-h-[100dvh] px-4 pt-6">
         <EmptyState
           icon={<Clock className="h-5 w-5" />}
           title="No questions yet"
@@ -126,7 +127,8 @@ export default function TestPlayer({ test, onExit, onFinished }: Props) {
   }
 
   return (
-    <div className="flex min-h-[100dvh] flex-col bg-canvas">
+    <div className="flex min-h-[100dvh] flex-col">
+      <AmbientBackground />
       <div className="px-4 pb-3 pt-safe">
         <div className="card p-4">
           {/* Timer */}
@@ -142,7 +144,7 @@ export default function TestPlayer({ test, onExit, onFinished }: Props) {
               type="button"
               onClick={() => setConfirmExit(true)}
               aria-label="Exit test"
-              className="icon-btn bg-surface-3 text-muted"
+              className="icon-btn relief-press bg-surface text-muted"
             >
               <X className="h-4 w-4" />
             </button>
@@ -167,8 +169,8 @@ export default function TestPlayer({ test, onExit, onFinished }: Props) {
           </div>
           <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-surface-3">
             <div
-              className="h-full rounded-full bg-brand transition-all duration-300"
-              style={{ width: `${progressPercent}%` }}
+              className="h-full rounded-full transition-all duration-300"
+              style={{ width: `${progressPercent}%`, backgroundImage: 'var(--grad-brand)' }}
             />
           </div>
         </div>
@@ -178,7 +180,7 @@ export default function TestPlayer({ test, onExit, onFinished }: Props) {
         <div className="card p-4">
           {/* Question */}
           <div className="flex gap-3">
-            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber text-2xs font-bold text-white">
+            <span className="fill-amber flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-2xs font-bold">
               {index + 1}
             </span>
             <p className="flex-1 text-sm leading-relaxed">{question.text}</p>
@@ -252,7 +254,7 @@ export default function TestPlayer({ test, onExit, onFinished }: Props) {
 
           {/* Solution */}
           {revealed && (
-            <div className="mt-4 animate-slide-up rounded-xl bg-surface-2 p-3.5">
+            <div className="relief-inset mt-4 animate-slide-up rounded-xl bg-surface-2 p-3.5">
               <p className="text-2xs font-semibold text-muted">Solution</p>
               <p className="mt-1 text-[13px] leading-relaxed text-muted">{question.explanation}</p>
             </div>

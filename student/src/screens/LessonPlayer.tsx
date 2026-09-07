@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEven
 import { ArrowLeft, Check, ChevronLeft, ChevronRight, Clock, FileText } from 'lucide-react';
 import { useData } from '../hooks/useData';
 import { useToast } from '../hooks/useToast';
+import AmbientBackground from '../components/AmbientBackground';
 import { EmptyState } from '../components/ui';
 import { burstConfetti } from '../lib/confetti';
 import { cacheLesson, cachedLesson } from '../lib/offline';
@@ -75,8 +76,9 @@ export default function LessonPlayer({ courseId, lessonId, onBack, onOpenLesson 
   }
 
   return (
-    <div className={`${toneOf(course?.colorTheme)} flex min-h-[100dvh] flex-col bg-canvas`}>
-      <header className="sticky top-0 z-20 border-b border-line bg-canvas/90 backdrop-blur">
+    <div className={`${toneOf(course?.colorTheme)} flex min-h-[100dvh] flex-col`}>
+      <AmbientBackground />
+      <header className="glass sticky top-0 z-20 border-b">
         <div className="flex h-12 items-center gap-1 px-2">
           <button
             type="button"
@@ -157,7 +159,7 @@ export default function LessonPlayer({ courseId, lessonId, onBack, onOpenLesson 
       </div>
 
       {/* Sticky action bar */}
-      <div className="fixed bottom-0 left-1/2 w-full max-w-md -translate-x-1/2 border-t border-line bg-surface px-4 pb-safe pt-3">
+      <div className="glass fixed bottom-0 left-1/2 w-full max-w-md -translate-x-1/2 border-t px-4 pb-safe pt-3">
         {completed ? (
           <div className="flex items-center justify-between gap-3">
             <span className="inline-flex items-center gap-1.5 text-[13px] font-medium text-success">

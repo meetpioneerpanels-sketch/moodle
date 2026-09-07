@@ -136,7 +136,7 @@ export default function CourseModal({ open, course, onClose, onSave }: Props) {
                 onClick={() => setDraft({ ...draft, emoji })}
                 className={`flex h-10 items-center justify-center rounded-lg border text-lg transition-colors ${
                   draft.emoji === emoji
-                    ? 'border-accent bg-accent-soft'
+                    ? 'border-brand bg-brand-soft'
                     : 'border-line hover:bg-surface-3'
                 }`}
               >

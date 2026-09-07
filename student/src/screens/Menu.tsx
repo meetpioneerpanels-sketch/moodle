@@ -66,7 +66,7 @@ export default function Menu({ onOpenCourses, onChangePackage, onChangeUniversit
         </div>
       </section>
 
-      <section className="divide-y divide-line overflow-hidden rounded-2xl bg-surface shadow-card">
+      <section className="card divide-y divide-line overflow-hidden">
         {rows.map((row) => (
           <button
             key={row.label}
@@ -74,7 +74,7 @@ export default function Menu({ onOpenCourses, onChangePackage, onChangeUniversit
             onClick={row.onClick}
             className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors active:bg-surface-2"
           >
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-surface-3 text-muted">
+            <span className="relief-sm flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-surface text-muted">
               {row.icon}
             </span>
             <span className="min-w-0 flex-1">
