@@ -71,6 +71,37 @@ await step('deleting a lesson asks for confirmation', async () => {
   await page.getByText('Lesson deleted').waitFor();
 });
 
+await step('the test bank creates a topical test', async () => {
+  await page.getByRole('button', { name: 'Tests' }).first().click();
+  await page.getByRole('heading', { name: 'Test bank' }).waitFor();
+  await page.getByRole('button', { name: 'New test' }).click();
+  await page.getByLabel('Title').fill('Smoke Topical Test');
+  await page.getByRole('button', { name: 'Create test' }).click();
+  await page.getByText('Test created').waitFor();
+  await page.getByRole('heading', { name: 'Smoke Topical Test' }).waitFor();
+});
+
+await step('a question is authored with a marked correct option', async () => {
+  await page.getByRole('button', { name: 'Add question' }).click();
+  await page.getByLabel('Question', { exact: true }).fill('What is 7 multiplied by 6?');
+  await page.getByRole('textbox', { name: 'Option A' }).fill('36');
+  await page.getByRole('textbox', { name: 'Option B' }).fill('42');
+  await page.getByRole('textbox', { name: 'Option C' }).fill('48');
+  await page.getByRole('textbox', { name: 'Option D' }).fill('54');
+  await page.getByRole('button', { name: 'Mark option B correct' }).click();
+  await page
+    .getByLabel('Solution', { exact: true })
+    .fill('Seven sixes are forty-two; it is worth memorising the times table to twelve.');
+  await page.getByRole('button', { name: 'Save question' }).click();
+  await page.getByText('Question added').waitFor();
+  await page.getByText('Answer: B').waitFor();
+});
+
+await step('a test can be locked behind a package', async () => {
+  await page.getByRole('button', { name: 'Lock', exact: true }).click();
+  await page.getByRole('button', { name: 'Unlock' }).waitFor();
+});
+
 await step('admins can change a role from the Users screen', async () => {
   await page.getByRole('button', { name: 'Users' }).first().click();
   await page.getByRole('heading', { name: 'Users' }).waitFor();

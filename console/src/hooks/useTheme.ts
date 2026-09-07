@@ -23,7 +23,7 @@ function apply(preference: ThemePreference): 'light' | 'dark' {
   document.documentElement.dataset.theme = resolved;
   document
     .querySelector('meta[name="theme-color"]')
-    ?.setAttribute('content', resolved === 'dark' ? '#09090b' : '#ffffff');
+    ?.setAttribute('content', resolved === 'dark' ? '#14161f' : '#c8102e');
   return resolved;
 }
 

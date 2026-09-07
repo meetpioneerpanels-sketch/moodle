@@ -1,24 +1,40 @@
-# EduHub - a mini Moodle in two apps
+# EduHub - entry-test prep in two apps
 
-A compact learning management system built from the *Mini-Moodle AI Build Kit*: a
-teacher/admin web console and a student PWA that share one Firebase project and stay in
-sync in real time.
+A compact learning platform built from the *Mini-Moodle AI Build Kit*: a teacher/admin web
+console and a student PWA that share one Firebase project and stay in sync in real time.
+Alongside the course library, it runs a full test-prep flow - university selection,
+packages, timed topical tests, score reports and per-subject analytics.
 
 | App | Folder | Runs on | What it does |
 | --- | --- | --- | --- |
 | **EduHub Console** | [`console/`](console) | Desktop/laptop browsers | Create courses and lessons, manage users, publish content |
-| **EduHub Student** | [`student/`](student) | Android (APK via PWABuilder) and any browser | Browse published courses, read lessons, mark progress |
+| **EduHub Student** | [`student/`](student) | Android (APK via PWABuilder) and any browser | Pick universities and a package, take timed tests, read lessons, track progress |
 
-Content flows one way - the console publishes, students read - and small progress signals
-flow back. Both apps subscribe to the same Firestore collections with `onSnapshot`
+Content flows one way - the console publishes courses, lessons and question banks, students
+read them - and progress signals (lesson completion, test attempts, doubts) flow back. Both apps subscribe to the same Firestore collections with `onSnapshot`
 listeners, so a lesson saved in the console appears on every student device in about a
 second, with no refresh.
 
 ```
 Teacher console  ──write──►  Cloud Firestore  ──onSnapshot──►  Student app
-      ▲                    (courses, lessons,                       │
-      └────────onSnapshot── users, lessonProgress) ◄────write───────┘
+      ▲              (courses, lessons, tests, questions,           │
+      │               users, lessonProgress, testAttempts,           │
+      └──onSnapshot── liveClasses, doubts, catalogue)  ◄───write─────┘
 ```
+
+## What the student app does
+
+| Screen | What it is |
+| --- | --- |
+| **Onboarding** | Pick an exam (ECAT / MDCAT) and the universities you are targeting, then a package - a four-step stepper, stored on the profile |
+| **Home** | Greeting, three circular quick actions, and rows into Live Classes, Recorded Courses, Practice Zone and sharing |
+| **Practice Zone** | University filter, subject tabs, chapter pills, and a list of topical tests that are either startable or locked behind a package |
+| **Test player** | One question at a time under a per-question countdown; answering reveals the correct option, a worked solution and the difficulty; questions can be bookmarked |
+| **Score report** | Correct / incorrect / seconds rings, an accuracy breakdown, performance by difficulty, time per question, and every solution on demand |
+| **Analytics** | Per-subject accuracy as concentric rings, questions correct, tests attempted, average time per question, plus course reading progress |
+| **Ask your Doubt** | The raised centre action - send a question to a teacher and read the replies |
+| **Live Classes** | Cohort dates, what is included, seats left, and registration |
+| **Courses** | The original library: course detail, lesson player, offline reading |
 
 ## Quick start
 
@@ -51,9 +67,11 @@ Each app supports the same commands:
 
 ## Tests
 
-[`e2e/`](e2e) holds Playwright smoke tests that drive both built apps in demo mode -
-course creation and publishing, lesson reordering and deletion, role changes, the student
-reading flow, and the PWA guarantees (service worker precache, manifest, offline start).
+[`e2e/`](e2e) holds 34 Playwright checks that drive both built apps in demo mode: course
+creation and publishing, lesson reordering, authoring a test and its questions, role
+changes, then on the student side the whole onboarding → practice → timed test → score
+report → analytics path, asking a doubt, registering for a live class, reading a lesson,
+and the PWA guarantees (service-worker precache, manifest, offline start).
 See [`e2e/README.md`](e2e/README.md).
 
 ## Repository layout
@@ -63,10 +81,12 @@ console/                Teacher & admin web console (React 18 + TS + Tailwind)
   src/firebase.ts       Firebase config + demo-mode switch
   src/types.ts          The shared Firestore schema
   src/hooks/            Auth, data (Firestore or demo store), toasts
-  src/screens/          Login, Dashboard, Courses, Course editor, Users, Settings
+  src/screens/          Login, Dashboard, Courses, Course editor, Test bank, Users, Settings
 student/                Student learning PWA (same stack, mobile-first)
   public/manifest.webmanifest, public/sw.js, public/icons/
-  src/screens/          Login, Home, Browse, Course detail, Lesson player, Profile
+  src/screens/          Login, onboarding, Home, Practice Zone, Test player, Score report,
+                        Analytics, Live Classes, Ask a Doubt, Menu, course reading
+  src/components/charts.tsx  Donut, MultiRing and BarChart - no charting dependency
   src/lib/offline.ts    localStorage cache of recently read lessons
 e2e/                    Playwright smoke tests for both apps (25 checks, no Firebase needed)
 docs/DESIGN.md          Design tokens, theming, type and motion
@@ -79,21 +99,24 @@ firestore.rules         Starter security rules (signed-in users only)
 ## Tech
 
 React 18, TypeScript, Tailwind CSS, Vite, Firebase JS SDK v10 (Auth + Firestore),
-lucide-react icons, Inter. No router library - both apps use state-based navigation, and
+lucide-react icons, Poppins. No router library - both apps use state-based navigation, and
 the student app pushes a history entry per screen so the Android back button behaves
 natively.
 
 ## Design
 
-A refined, minimal interface built on CSS-variable tokens, with a light/dark/system theme
-switch in both apps. Borders rather than heavy shadows, a narrow type scale where weight
-carries the hierarchy, and one indigo accent used sparingly - so the course content is the
-loudest thing on screen. Each course's colour becomes a `tone-*` class that stays legible in
-both themes. See [`docs/DESIGN.md`](docs/DESIGN.md).
+Built from the product design reference: a soft lavender-grey canvas, white cards on a low
+wide shadow, fully rounded buttons, and a crimson brand colour with amber / sky / rose
+supporting accents. Poppins throughout. Everything runs on CSS-variable tokens, so the
+light/dark/system switch in both apps needs no per-component branching, and each subject's
+colour is a `tone-*` class that stays legible in both themes. Charts are hand-rolled SVG -
+donut rings, concentric multi-rings and grouped bars - with no charting dependency.
+See [`docs/DESIGN.md`](docs/DESIGN.md).
 
 ## Roles
 
 Three roles, one bootstrap rule: **the first account created in a fresh Firebase project
 becomes the admin**, so you can never lock yourself out. Admins manage everything and can
 change any user's role from the Users screen; teachers manage the courses they own;
-students read published courses only and never see drafts.
+students read published courses only and never see drafts. Locked topical tests open with
+the Advanced package.

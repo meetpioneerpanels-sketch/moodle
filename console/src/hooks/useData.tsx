@@ -21,12 +21,27 @@ import {
 } from 'firebase/firestore';
 import { db, isDemoMode } from '../firebase';
 import { demoStore } from '../lib/demoStore';
-import type { AppUser, Course, CourseDraft, Lesson, LessonDraft, Role } from '../types';
+import type {
+  AppUser,
+  Course,
+  CourseDraft,
+  Lesson,
+  LessonDraft,
+  Question,
+  QuestionDraft,
+  Role,
+  Test,
+  TestDraft,
+  University,
+} from '../types';
 
 interface DataContextValue {
   courses: Course[];
   lessons: Lesson[];
   users: AppUser[];
+  tests: Test[];
+  questions: Question[];
+  universities: University[];
   loading: boolean;
   /** True while the realtime listeners are attached (drives the "Live" dot). */
   live: boolean;
@@ -39,6 +54,13 @@ interface DataContextValue {
   deleteLesson: (lessonId: string, courseId: string) => Promise<void>;
   moveLesson: (courseId: string, lessonId: string, direction: -1 | 1) => Promise<void>;
   setUserRole: (userId: string, role: Role) => Promise<void>;
+  createTest: (draft: TestDraft) => Promise<string>;
+  updateTest: (testId: string, patch: Partial<TestDraft>) => Promise<void>;
+  deleteTest: (testId: string) => Promise<void>;
+  questionsOf: (testId: string) => Question[];
+  createQuestion: (testId: string, draft: QuestionDraft) => Promise<void>;
+  updateQuestion: (questionId: string, draft: QuestionDraft) => Promise<void>;
+  deleteQuestion: (questionId: string, testId: string) => Promise<void>;
 }
 
 const DataContext = createContext<DataContextValue | null>(null);
@@ -55,6 +77,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [courses, setCourses] = useState<Course[]>([]);
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [users, setUsers] = useState<AppUser[]>([]);
+  const [tests, setTests] = useState<Test[]>([]);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [universities, setUniversities] = useState<University[]>([]);
   const [loading, setLoading] = useState(true);
   const [live, setLive] = useState(false);
 
@@ -65,6 +90,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
         setCourses(sortCourses(demoStore.courses));
         setLessons(sortLessons(demoStore.lessons));
         setUsers([...demoStore.users]);
+        setTests([...demoStore.tests]);
+        setQuestions([...demoStore.questions]);
+        setUniversities([...demoStore.universities]);
       };
       pull();
       setLoading(false);
@@ -100,10 +128,24 @@ export function DataProvider({ children }: { children: ReactNode }) {
       settle();
     });
 
+    const extras: [string, (docs: Record<string, unknown>[]) => void][] = [
+      ['tests', (docs) => setTests(docs as unknown as Test[])],
+      ['questions', (docs) => setQuestions(docs as unknown as Question[])],
+      ['universities', (docs) => setUniversities(docs as unknown as University[])],
+    ];
+    const stopExtras = extras.map(([name, apply]) =>
+      onSnapshot(
+        collection(db, name),
+        (snapshot) => apply(snapshot.docs.map((item) => ({ id: item.id, ...item.data() }))),
+        () => undefined,
+      ),
+    );
+
     return () => {
       stopCourses();
       stopLessons();
       stopUsers();
+      stopExtras.forEach((stop) => stop());
       setLive(false);
     };
   }, []);
@@ -231,6 +273,80 @@ export function DataProvider({ children }: { children: ReactNode }) {
     [lessons],
   );
 
+  // --- test bank ------------------------------------------------------------
+
+  const questionsOf = useCallback(
+    (testId: string) =>
+      questions.filter((question) => question.testId === testId).sort((a, b) => a.order - b.order),
+    [questions],
+  );
+
+  const createTest = useCallback(async (draft: TestDraft) => {
+    const payload = { ...draft, questionCount: 0, order: Date.now() };
+    if (isDemoMode) return demoStore.addTest(payload);
+    const created = await addDoc(collection(db, 'tests'), payload);
+    return created.id;
+  }, []);
+
+  const updateTest = useCallback(async (testId: string, patch: Partial<TestDraft>) => {
+    if (isDemoMode) {
+      demoStore.updateTest(testId, patch);
+      return;
+    }
+    await updateDoc(doc(db, 'tests', testId), { ...patch });
+  }, []);
+
+  const deleteTest = useCallback(async (testId: string) => {
+    if (isDemoMode) {
+      demoStore.deleteTest(testId);
+      return;
+    }
+    const owned = await getDocs(query(collection(db, 'questions'), where('testId', '==', testId)));
+    const batch = writeBatch(db);
+    owned.docs.forEach((item) => batch.delete(item.ref));
+    batch.delete(doc(db, 'tests', testId));
+    await batch.commit();
+  }, []);
+
+  const createQuestion = useCallback(
+    async (testId: string, draft: QuestionDraft) => {
+      const siblings = (isDemoMode ? demoStore.questions : questions).filter(
+        (question) => question.testId === testId,
+      );
+      const payload = { ...draft, testId, order: siblings.length };
+      if (isDemoMode) {
+        demoStore.addQuestion(payload);
+        return;
+      }
+      await addDoc(collection(db, 'questions'), payload);
+      await updateDoc(doc(db, 'tests', testId), { questionCount: siblings.length + 1 });
+    },
+    [questions],
+  );
+
+  const updateQuestion = useCallback(async (questionId: string, draft: QuestionDraft) => {
+    if (isDemoMode) {
+      demoStore.updateQuestion(questionId, draft);
+      return;
+    }
+    await updateDoc(doc(db, 'questions', questionId), { ...draft });
+  }, []);
+
+  const deleteQuestion = useCallback(
+    async (questionId: string, testId: string) => {
+      if (isDemoMode) {
+        demoStore.deleteQuestion(questionId);
+        return;
+      }
+      await deleteDoc(doc(db, 'questions', questionId));
+      const remaining = questions.filter(
+        (question) => question.testId === testId && question.id !== questionId,
+      ).length;
+      await updateDoc(doc(db, 'tests', testId), { questionCount: remaining });
+    },
+    [questions],
+  );
+
   const setUserRole = useCallback(async (userId: string, role: Role) => {
     if (isDemoMode) {
       demoStore.setUserRole(userId, role);
@@ -244,6 +360,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
       courses,
       lessons,
       users,
+      tests,
+      questions,
+      universities,
       loading,
       live,
       createCourse,
@@ -255,11 +374,21 @@ export function DataProvider({ children }: { children: ReactNode }) {
       deleteLesson,
       moveLesson,
       setUserRole,
+      createTest,
+      updateTest,
+      deleteTest,
+      questionsOf,
+      createQuestion,
+      updateQuestion,
+      deleteQuestion,
     }),
     [
       courses,
       lessons,
       users,
+      tests,
+      questions,
+      universities,
       loading,
       live,
       createCourse,
@@ -271,6 +400,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
       deleteLesson,
       moveLesson,
       setUserRole,
+      createTest,
+      updateTest,
+      deleteTest,
+      questionsOf,
+      createQuestion,
+      updateQuestion,
+      deleteQuestion,
     ],
   );
 

@@ -1,9 +1,12 @@
 # End-to-end smoke tests
 
-Two Playwright scripts that drive the built apps in demo mode - no Firebase project needed.
-They cover the paths that are easy to break and slow to check by hand: creating and
-publishing a course, reordering and deleting lessons, role changes, the student reading
-flow, and the PWA guarantees (service worker, manifest, offline start).
+Two Playwright scripts - 34 checks - that drive the built apps in demo mode, with no
+Firebase project needed. They cover the paths that are easy to break and slow to check by
+hand: creating and publishing a course, reordering and deleting lessons, authoring a
+topical test and its questions, role changes; and on the student side the whole onboarding
+→ Practice Zone → timed test → score report → analytics path, asking a doubt, registering
+for a live class, reading a lesson, and the PWA guarantees (service worker, manifest,
+offline start).
 
 ## Run them
 

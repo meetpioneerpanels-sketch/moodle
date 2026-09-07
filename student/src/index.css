@@ -3,183 +3,206 @@
 @tailwind utilities;
 
 /* ---------------------------------------------------------------------------
-   Design tokens. Light is the default; [data-theme="dark"] on <html> swaps the
-   same names, so no component ever hard-codes a colour.
+   Design tokens. Soft lavender-grey canvas, white cards, crimson primary -
+   the palette from the product design reference. Dark is a tuned counterpart.
    --------------------------------------------------------------------------- */
 @layer base {
   :root {
     color-scheme: light;
 
-    --canvas: #ffffff;
+    --canvas: #eef0f6;
     --surface: #ffffff;
-    --surface-2: #fafafa;
-    --surface-3: #f4f4f5;
-    --line: #e4e4e7;
-    --line-strong: #d4d4d8;
+    --surface-2: #f7f8fc;
+    --surface-3: #eef0f6;
+    --line: #e7e9f2;
+    --line-strong: #d3d7e5;
 
-    --fg: #18181b;
-    --fg-muted: #52525b;
-    --fg-subtle: #8b8b93;
+    --fg: #2c3047;
+    --fg-muted: #666d88;
+    --fg-subtle: #9aa0b8;
 
-    --accent: #4f46e5;
-    --accent-hover: #4338ca;
-    --accent-fg: #ffffff;
-    --accent-soft: #eef2ff;
-    --accent-on-soft: #4338ca;
+    --brand: #c8102e;
+    --brand-hover: #a80d26;
+    --brand-soft: #fdecef;
+    --brand-on-soft: #c8102e;
 
-    --success: #059669;
-    --success-soft: #ecfdf5;
-    --warning: #b45309;
-    --warning-soft: #fffbeb;
-    --danger: #dc2626;
-    --danger-hover: #b91c1c;
-    --danger-soft: #fef2f2;
+    --amber: #f5a623;
+    --amber-soft: #fef4e3;
+    --sky: #2d9cdb;
+    --sky-soft: #e8f4fc;
+    --rose: #ee5a6f;
+    --rose-soft: #fdecef;
+    --violet: #9b51e0;
+    --violet-soft: #f4ecfd;
 
-    --ring: rgb(79 70 229 / 0.35);
+    --success: #27ae60;
+    --success-soft: #e7f7ee;
+    --warning: #f2994a;
+    --warning-soft: #fef1e7;
+    --danger: #eb5757;
+    --danger-hover: #d94141;
+    --danger-soft: #fdeded;
 
-    --shadow-xs: 0 1px 2px rgb(16 17 26 / 0.04);
-    --shadow-sm: 0 1px 3px rgb(16 17 26 / 0.06), 0 1px 2px rgb(16 17 26 / 0.04);
-    --shadow-md: 0 8px 24px -8px rgb(16 17 26 / 0.12), 0 2px 4px rgb(16 17 26 / 0.04);
-    --shadow-lg: 0 24px 48px -16px rgb(16 17 26 / 0.18);
+    --ring: rgb(200 16 46 / 0.28);
 
-    --skeleton-from: #f4f4f5;
-    --skeleton-via: #e9e9ec;
+    --shadow-xs: 0 1px 2px rgb(44 48 71 / 0.05);
+    --shadow-sm: 0 2px 8px rgb(44 48 71 / 0.06);
+    --shadow-card: 0 4px 20px rgb(44 48 71 / 0.06);
+    --shadow-md: 0 8px 28px rgb(44 48 71 / 0.10);
+    --shadow-lg: 0 20px 48px rgb(44 48 71 / 0.16);
+
+    --skeleton-from: #eef0f6;
+    --skeleton-via: #e3e6f0;
   }
 
   [data-theme='dark'] {
     color-scheme: dark;
 
-    --canvas: #09090b;
-    --surface: #121216;
-    --surface-2: #161619;
-    --surface-3: #1f1f25;
-    --line: #27272e;
-    --line-strong: #3a3a44;
+    --canvas: #14161f;
+    --surface: #1c1f2b;
+    --surface-2: #222634;
+    --surface-3: #2a2e3e;
+    --line: #2e3242;
+    --line-strong: #414761;
 
-    --fg: #f4f4f5;
-    --fg-muted: #a1a1aa;
-    --fg-subtle: #7a7a85;
+    --fg: #eef0f6;
+    --fg-muted: #a8aec6;
+    --fg-subtle: #7c8299;
 
-    --accent: #6366f1;
-    --accent-hover: #818cf8;
-    --accent-fg: #ffffff;
-    --accent-soft: rgb(99 102 241 / 0.16);
-    --accent-on-soft: #a5b4fc;
+    --brand: #ef4358;
+    --brand-hover: #f76274;
+    --brand-soft: rgb(239 67 88 / 0.16);
+    --brand-on-soft: #ff8b9b;
 
-    --success: #34d399;
-    --success-soft: rgb(52 211 153 / 0.14);
-    --warning: #fbbf24;
-    --warning-soft: rgb(251 191 36 / 0.14);
-    --danger: #f87171;
-    --danger-hover: #ef4444;
-    --danger-soft: rgb(248 113 113 / 0.14);
+    --amber: #f5a623;
+    --amber-soft: rgb(245 166 35 / 0.16);
+    --sky: #4fb3e8;
+    --sky-soft: rgb(79 179 232 / 0.16);
+    --rose: #f4788a;
+    --rose-soft: rgb(244 120 138 / 0.16);
+    --violet: #b177ea;
+    --violet-soft: rgb(177 119 234 / 0.16);
 
-    --ring: rgb(129 140 248 / 0.45);
+    --success: #3ecf7d;
+    --success-soft: rgb(62 207 125 / 0.16);
+    --warning: #f2994a;
+    --warning-soft: rgb(242 153 74 / 0.16);
+    --danger: #f47272;
+    --danger-hover: #ef5b5b;
+    --danger-soft: rgb(244 114 114 / 0.16);
+
+    --ring: rgb(239 67 88 / 0.4);
 
     --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.4);
-    --shadow-sm: 0 1px 3px rgb(0 0 0 / 0.5);
-    --shadow-md: 0 8px 24px -8px rgb(0 0 0 / 0.6);
-    --shadow-lg: 0 24px 48px -16px rgb(0 0 0 / 0.7);
+    --shadow-sm: 0 2px 8px rgb(0 0 0 / 0.45);
+    --shadow-card: 0 4px 20px rgb(0 0 0 / 0.45);
+    --shadow-md: 0 8px 28px rgb(0 0 0 / 0.55);
+    --shadow-lg: 0 20px 48px rgb(0 0 0 / 0.65);
 
-    --skeleton-from: #1a1a20;
-    --skeleton-via: #24242b;
+    --skeleton-from: #222634;
+    --skeleton-via: #2b3040;
   }
 
-  /* Course accents. Each course carries one of these; the tone variables let a
-     single set of utilities render it correctly in both themes. */
-  .tone-green {
-    --tone: #10b981;
-    --tone-soft: rgb(16 185 129 / 0.12);
-    --tone-fg: #047857;
+  /* Subject / course accents. Each tone-* sets the three variables the
+     tone-* utilities read, so one markup pattern works in both themes. */
+  .tone-red {
+    --tone: #eb5757;
+    --tone-soft: rgb(235 87 87 / 0.12);
+    --tone-fg: #d63d3d;
   }
   .tone-blue {
-    --tone: #3b82f6;
-    --tone-soft: rgb(59 130 246 / 0.12);
-    --tone-fg: #1d4ed8;
+    --tone: #2d9cdb;
+    --tone-soft: rgb(45 156 219 / 0.12);
+    --tone-fg: #1b7fb8;
   }
+  .tone-amber {
+    --tone: #f5a623;
+    --tone-soft: rgb(245 166 35 / 0.14);
+    --tone-fg: #c47f11;
+  }
+  .tone-green {
+    --tone: #27ae60;
+    --tone-soft: rgb(39 174 96 / 0.12);
+    --tone-fg: #1e8c4c;
+  }
+  .tone-violet {
+    --tone: #9b51e0;
+    --tone-soft: rgb(155 81 224 / 0.12);
+    --tone-fg: #7f38c4;
+  }
+  /* Legacy course themes keep working by mapping onto the new tones. */
   .tone-orange {
-    --tone: #f59e0b;
-    --tone-soft: rgb(245 158 11 / 0.14);
-    --tone-fg: #b45309;
+    --tone: #f5a623;
+    --tone-soft: rgb(245 166 35 / 0.14);
+    --tone-fg: #c47f11;
   }
   .tone-purple {
-    --tone: #8b5cf6;
-    --tone-soft: rgb(139 92 246 / 0.12);
-    --tone-fg: #6d28d9;
+    --tone: #9b51e0;
+    --tone-soft: rgb(155 81 224 / 0.12);
+    --tone-fg: #7f38c4;
   }
   .tone-pink {
-    --tone: #ec4899;
-    --tone-soft: rgb(236 72 153 / 0.12);
-    --tone-fg: #be185d;
+    --tone: #ee5a6f;
+    --tone-soft: rgb(238 90 111 / 0.12);
+    --tone-fg: #d33f57;
   }
-  [data-theme='dark'] .tone-green {
-    --tone-fg: #34d399;
-    --tone-soft: rgb(16 185 129 / 0.16);
-  }
-  [data-theme='dark'] .tone-blue {
-    --tone-fg: #60a5fa;
-    --tone-soft: rgb(59 130 246 / 0.16);
-  }
-  [data-theme='dark'] .tone-orange {
-    --tone-fg: #fbbf24;
-    --tone-soft: rgb(245 158 11 / 0.16);
-  }
-  [data-theme='dark'] .tone-purple {
-    --tone-fg: #a78bfa;
-    --tone-soft: rgb(139 92 246 / 0.16);
-  }
-  [data-theme='dark'] .tone-pink {
-    --tone-fg: #f472b6;
-    --tone-soft: rgb(236 72 153 / 0.16);
-  }
+  [data-theme='dark'] .tone-red { --tone-fg: #ff8080; }
+  [data-theme='dark'] .tone-blue { --tone-fg: #5fbdf0; }
+  [data-theme='dark'] .tone-amber { --tone-fg: #ffbc4d; }
+  [data-theme='dark'] .tone-orange { --tone-fg: #ffbc4d; }
+  [data-theme='dark'] .tone-green { --tone-fg: #4fd68c; }
+  [data-theme='dark'] .tone-violet { --tone-fg: #bd8bf0; }
+  [data-theme='dark'] .tone-purple { --tone-fg: #bd8bf0; }
+  [data-theme='dark'] .tone-pink { --tone-fg: #ff8fa0; }
 
   html {
     -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
     @apply bg-canvas text-fg font-sans antialiased;
-    font-feature-settings: 'cv02', 'cv03', 'cv04', 'ss01';
   }
 
-  h1,
-  h2,
-  h3,
-  h4 {
-    @apply font-semibold tracking-[-0.011em] text-fg;
+  h1, h2, h3, h4 {
+    @apply font-semibold text-fg;
   }
 
   ::selection {
-    background: var(--accent-soft);
-    color: var(--accent-on-soft);
+    background: var(--brand-soft);
+    color: var(--brand-on-soft);
   }
 
   *:focus-visible {
     outline: none;
     box-shadow: 0 0 0 3px var(--ring);
-    border-radius: 0.5rem;
+    border-radius: 0.75rem;
   }
 }
 
 @layer components {
   /* --- buttons ------------------------------------------------------------ */
   .btn {
-    @apply inline-flex h-10 select-none items-center justify-center gap-2 rounded-lg px-4
-           text-sm font-medium transition-colors duration-150
+    @apply inline-flex h-11 select-none items-center justify-center gap-2 rounded-full px-5
+           text-sm font-semibold transition-all duration-150
            disabled:pointer-events-none disabled:opacity-45;
   }
   .btn-sm {
-    @apply h-8 gap-1.5 rounded-md px-3 text-[13px];
+    @apply h-9 gap-1.5 px-4 text-[13px];
   }
   .btn-primary {
-    @apply btn bg-accent text-accent-fg shadow-xs hover:bg-accent-hover;
+    @apply btn bg-brand text-white shadow-sm hover:bg-brand-hover active:scale-[0.98];
   }
   .btn-blue {
-    @apply btn-primary;
+    @apply btn bg-sky text-white shadow-sm hover:brightness-95 active:scale-[0.98];
   }
   .btn-secondary,
   .btn-ghost {
-    @apply btn border border-line bg-surface text-fg hover:bg-surface-3;
+    @apply btn border border-line bg-surface text-fg hover:bg-surface-2 active:scale-[0.98];
+  }
+  /* Outlined brand button, as used for "View solutions". */
+  .btn-outline {
+    @apply btn border border-brand bg-transparent text-brand hover:bg-brand-soft active:scale-[0.98];
   }
   .btn-quiet {
     @apply btn text-muted hover:bg-surface-3 hover:text-fg;
@@ -188,22 +211,31 @@
     @apply btn bg-danger text-white hover:bg-danger-hover;
   }
 
+  /* Round icon button - the red arrow buttons on list rows. */
+  .icon-btn {
+    @apply inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full
+           transition-transform duration-150 active:scale-95;
+  }
+
   /* --- surfaces ----------------------------------------------------------- */
   .card {
-    @apply rounded-xl border border-line bg-surface;
+    @apply rounded-2xl bg-surface shadow-card;
   }
   .card-hover {
-    @apply transition-[border-color,box-shadow] duration-150 hover:border-line-strong hover:shadow-sm;
+    @apply transition-shadow duration-150 hover:shadow-md;
+  }
+  .card-outline {
+    @apply rounded-2xl border border-line bg-surface;
   }
 
   /* --- forms -------------------------------------------------------------- */
   .input {
-    @apply w-full rounded-lg border border-line bg-surface px-3 py-2.5 text-sm text-fg
+    @apply w-full rounded-xl border border-line bg-surface px-4 py-3 text-sm text-fg
            placeholder:text-subtle transition-colors
-           focus:border-accent focus:outline-none focus:ring-0;
+           focus:border-brand focus:outline-none;
   }
   select.input {
-    @apply cursor-pointer pr-8;
+    @apply cursor-pointer pr-9;
   }
   .label {
     @apply mb-1.5 block text-[13px] font-medium text-muted;
@@ -217,19 +249,16 @@
 
   /* --- bits --------------------------------------------------------------- */
   .chip {
-    @apply inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium;
+    @apply inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-2xs font-semibold;
   }
   .chip-neutral {
     @apply chip bg-surface-3 text-muted;
   }
-  .chip-accent {
-    @apply chip bg-accent-soft text-accent-on-soft;
-  }
-  .divider {
-    @apply border-line;
+  .chip-brand {
+    @apply chip bg-brand-soft text-brand-on-soft;
   }
   .skeleton {
-    @apply rounded-lg;
+    @apply rounded-xl;
     background-image: linear-gradient(
       90deg,
       var(--skeleton-from) 0%,
@@ -240,75 +269,36 @@
     @apply animate-shimmer;
   }
 
-  /* --- course tones ------------------------------------------------------- */
-  .tone-solid {
-    background-color: var(--tone);
-    color: #fff;
-  }
-  .tone-soft {
-    background-color: var(--tone-soft);
-    color: var(--tone-fg);
-  }
-  .tone-text {
-    color: var(--tone-fg);
-  }
-  .tone-bar {
-    background-color: var(--tone);
-  }
-  .tone-ring {
-    box-shadow: 0 0 0 2px var(--tone);
-  }
+  /* --- course / subject tones -------------------------------------------- */
+  .tone-solid { background-color: var(--tone); color: #fff; }
+  .tone-soft { background-color: var(--tone-soft); color: var(--tone-fg); }
+  .tone-text { color: var(--tone-fg); }
+  .tone-bar { background-color: var(--tone); }
+  .tone-border { border-color: var(--tone); }
 }
 
 @layer utilities {
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .pb-safe { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.5rem); }
+  .pt-safe { padding-top: calc(env(safe-area-inset-top, 0px) + 0.5rem); }
 }
 
-/* ---------------------------------------------------------------------------
-   Student app only: phone ergonomics on top of the shared design system.
-   --------------------------------------------------------------------------- */
-@layer base {
-  html {
-    /* Stops the layout from rescaling when a phone is rotated. */
-    -webkit-text-size-adjust: 100%;
-  }
-}
-
+/* --- student app only: phone ergonomics ------------------------------------ */
 @layer components {
   /* Android's minimum comfortable touch target is 44 px. */
-  .btn {
-    @apply h-11 px-5;
-  }
-  .btn-sm {
-    @apply h-9 px-3.5;
-  }
-  .input {
-    @apply py-3 text-[15px];
-  }
+  .btn { @apply h-12 px-6; }
+  .btn-sm { @apply h-9 px-4; }
+  .input { @apply py-3.5 text-[15px]; }
 }
 
 @layer utilities {
-  /* Keep content clear of the gesture bar / home indicator. */
-  .pb-safe {
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.5rem);
-  }
-  .pt-safe {
-    padding-top: calc(env(safe-area-inset-top, 0px) + 0.5rem);
-  }
-  /* Lesson body copy: 17px at 1.7 line height. */
+  /* Lesson and question body copy: 17px at 1.7 line height. */
   .prose-lesson p {
     font-size: 17px;
     line-height: 1.7;
     margin-bottom: 1.15rem;
     color: var(--fg-muted);
   }
-  .prose-lesson p:first-of-type {
-    color: var(--fg);
-  }
+  .prose-lesson p:first-of-type { color: var(--fg); }
 }

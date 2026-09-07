@@ -191,9 +191,15 @@ Small, deliberate departures made while building the real thing:
   blank page.
 - **A demo-mode sign-in derives a display name from the email**, so the greeting reads "Hi Liam"
   rather than "Hi liam@school.edu".
-- **The design system was replaced.** The prompts above specify a Duolingo-inspired look -
-  Nunito, chunky 3D buttons, `#58CC02` green. The apps now use a refined minimal system:
-  Inter, flat filled buttons, hairline borders instead of heavy shadows, a single indigo
-  accent, and a light/dark/system theme switch. The course colour themes survive as tinted
-  `tone-*` accents. See [`DESIGN.md`](DESIGN.md); the prompts are kept verbatim above as the
-  original brief.
+- **The design system was replaced twice.** The prompts above specify a Duolingo-inspired
+  look - Nunito, chunky 3D buttons, `#58CC02` green. The apps now follow a supplied product
+  design reference instead: Poppins, a lavender-grey canvas with white cards on a soft
+  shadow, fully rounded buttons, a crimson brand colour, and a light/dark/system theme
+  switch. Course and subject colours survive as tinted `tone-*` accents. See
+  [`DESIGN.md`](DESIGN.md); the prompts are kept verbatim above as the original brief.
+- **A test-prep layer was added** on top of the LMS the prompts describe: exams and
+  university selection, packages, a topical-test Practice Zone, a timed question player
+  with worked solutions, a score report with difficulty and timing analysis, per-subject
+  analytics, live-class registration, and an Ask-your-Doubt channel - plus the Test bank in
+  the console that authors the question banks behind them. Those collections are documented
+  in [`DATA-MODEL.md`](DATA-MODEL.md).

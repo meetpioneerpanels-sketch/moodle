@@ -20,65 +20,156 @@ await step('login screen renders at phone width', async () => {
 });
 
 await step('log in (demo mode accepts any credentials)', async () => {
-  await page.getByLabel('Email').fill('liam@school.edu');
+  await page.getByLabel('Email').fill('ahmed.khan@school.edu');
   await page.getByLabel('Password').fill('password123');
   await page.getByRole('button', { name: 'Log in' }).click();
+});
+
+await step('onboarding asks for the exam and universities', async () => {
+  await page.getByRole('heading', { name: 'Choose your Courses' }).waitFor();
+  // Next stays disabled until at least one university is picked.
+  const next = page.getByRole('button', { name: 'Next' });
+  if (await next.isEnabled()) throw new Error('Next should be disabled with no university chosen');
+  await page.getByRole('button', { name: 'FAST' }).click();
+  await page.getByRole('button', { name: 'KU' }).click();
+  await next.click();
+});
+
+await step('onboarding asks for a package', async () => {
+  await page.getByRole('heading', { name: 'Select Package' }).waitFor();
+  const next = page.getByRole('button', { name: 'Next' });
+  if (await next.isEnabled()) throw new Error('Next should be disabled with no package chosen');
+  await page.getByRole('button', { name: 'Select' }).nth(1).click();
+  await page.getByRole('button', { name: 'Selected' }).waitFor();
+  await next.click();
+});
+
+await step('home shows the quick actions and action rows', async () => {
   await page.getByText(/^Hi /).first().waitFor();
+  for (const label of ['Live Classes', 'Recorded Course', 'Practice Zone', 'Share with Friends']) {
+    await page.getByText(label, { exact: true }).first().waitFor();
+  }
 });
 
-await step('home shows continue-learning and the course rail', async () => {
-  await page.getByText('Continue learning').waitFor();
-  await page.getByText('All courses').waitFor();
+await step('practice zone lists tests, locked and unlocked', async () => {
+  await page.getByText('Practice Zone', { exact: true }).first().click();
+  await page.getByRole('heading', { name: 'Practice Zone' }).waitFor();
+  await page.getByText('Topical Test - 01').first().waitFor();
+  if ((await page.getByText('Locked').count()) === 0) throw new Error('no locked tests shown');
+  // Subject and chapter switching both re-filter the list.
+  await page.getByRole('button', { name: 'Physics', exact: true }).click();
+  await page.getByText('Topical Test - 01').first().waitFor();
+  await page.getByRole('button', { name: 'Ch 2', exact: true }).click();
+  await page.getByText('Locked').first().waitFor();
+  await page.getByRole('button', { name: 'Ch 1', exact: true }).click();
+  await page.getByRole('button', { name: 'Maths', exact: true }).click();
 });
 
-await step('published courses are listed', async () => {
-  const text = await page.locator('body').innerText();
-  if (!text.includes('Algebra Foundations')) throw new Error('published course is missing');
+let questionCount = 0;
+
+await step('the test player runs a timed question', async () => {
+  await page.getByText('Topical Test - 01').first().click();
+  await page.getByText('Time', { exact: true }).waitFor();
+  await page.getByText(/^\d+ sec$/).waitFor();
+  await page.getByText('Progress').waitFor();
+  const counter = await page.getByText(/^\d+\/\d+$/).first().innerText();
+  questionCount = Number(counter.split('/')[1]);
+  if (!questionCount) throw new Error(`could not read the question count from "${counter}"`);
 });
 
-await step('browse filters by search and category', async () => {
-  await page.getByRole('button', { name: 'Browse' }).click();
-  await page.getByRole('heading', { name: 'Browse' }).waitFor();
-  await page.getByLabel('Search courses').fill('living');
-  await page.getByText('Living Systems').waitFor();
-  await page.getByLabel('Search courses').fill('');
-  await page.getByRole('button', { name: 'Science', exact: true }).click();
-  await page.getByText('Living Systems').waitFor();
-  await page.getByRole('button', { name: 'All', exact: true }).click();
+await step('answering reveals the correct option and the solution', async () => {
+  await page.locator('ul li button').first().click();
+  await page.getByText('Solution').waitFor();
+  await page.getByText('Difficulty Level').waitFor();
+  // Exactly one option is marked correct.
+  const correct = await page.locator('button.border-success').count();
+  if (correct !== 1) throw new Error(`expected 1 correct option, found ${correct}`);
 });
 
-await step('a course opens with its lesson list and progress', async () => {
+await step('finishing every question produces a score report', async () => {
+  for (let index = 0; index < questionCount + 2; index++) {
+    const next = page.getByRole('button', { name: /Next question|Finish test/ });
+    if (await next.isVisible().catch(() => false)) {
+      await next.click();
+    } else if (await page.getByRole('heading', { name: 'Score and Stats' }).isVisible().catch(() => false)) {
+      break;
+    }
+    const options = page.locator('ul li button');
+    if (await options.first().isVisible().catch(() => false)) {
+      await options.first().click();
+    }
+  }
+  await page.getByRole('heading', { name: 'Score and Stats' }).waitFor({ timeout: 20000 });
+});
+
+await step('the report shows score, accuracy and both charts', async () => {
+  await page.getByText('Correct').first().waitFor();
+  await page.getByText('Incorrect').first().waitFor();
+  await page.getByText('Accuracy').waitFor();
+  await page.getByText('Performance Analysis by Question Difficulty').waitFor();
+  await page.getByText('Time Taken for Each Question').waitFor();
+});
+
+await step('solutions expand on demand', async () => {
+  await page.getByRole('button', { name: 'View solutions' }).click();
+  await page.getByRole('heading', { name: 'Solutions' }).waitFor();
+  await page.getByRole('button', { name: 'Hide solutions' }).click();
+});
+
+await step('the attempt lands in analytics', async () => {
+  await page.getByRole('button', { name: 'Done' }).click();
+  await page.getByRole('heading', { name: 'Analytics' }).waitFor();
+  await page.getByText('All Subjects').waitFor();
+  await page.getByText('Questions Correct').waitFor();
+  await page.getByText('Tests Attempted').waitFor();
+  await page.getByText('Topical Test - 01').first().waitFor();
+});
+
+await step('progress tab lists course completion', async () => {
+  await page.getByRole('button', { name: 'Progress', exact: true }).click();
+  await page.getByText('Algebra Foundations').first().waitFor();
+  await page.getByRole('button', { name: 'Performance', exact: true }).click();
+});
+
+await step('asking a doubt records it', async () => {
+  await page.getByRole('button', { name: 'Ask your Doubt' }).click();
+  await page.getByRole('heading', { name: 'Ask your Doubt' }).waitFor();
+  await page.getByLabel('Your question').fill('I do not follow the step where 72 - 8n becomes zero.');
+  await page.getByRole('button', { name: 'Send to a teacher' }).click();
+  await page.getByText('Sent - a teacher will reply shortly').waitFor();
+  await page.getByText('Waiting').waitFor();
+});
+
+await step('live classes list what is included', async () => {
+  await page.goBack();
+  await page.getByRole('button', { name: 'Home' }).click();
+  await page.getByText('Live Classes', { exact: true }).first().click();
+  await page.getByRole('heading', { name: 'Live Classes' }).waitFor();
+  await page.getByText('What is Included?').first().waitFor();
+  await page.getByText('NUST Live Course').waitFor();
+  await page.getByRole('button', { name: 'Register now' }).first().click();
+  await page.getByText(/Registered for/).waitFor();
+});
+
+await step('the course library still reads lessons', async () => {
+  await page.goBack();
+  await page.getByRole('button', { name: 'Courses' }).click();
   await page.getByText('Algebra Foundations').first().click();
   await page.getByText('0 of 3 lessons').waitFor();
-});
-
-await step('the lesson player renders the lesson', async () => {
   await page.getByText('What a variable really is').click();
   await page.getByRole('heading', { name: 'What a variable really is' }).waitFor();
-  await page.getByText('8 min read').waitFor();
-});
-
-await step('marking complete records progress', async () => {
   await page.getByRole('button', { name: 'Mark as complete' }).click();
   await page.getByText('Lesson complete - nice work!').waitFor();
-  await page.getByText('Completed').waitFor();
 });
 
-await step('next lesson advances within the course', async () => {
-  await page.getByRole('button', { name: 'Next lesson' }).click();
-  await page.getByRole('heading', { name: 'Balancing equations' }).waitFor();
-});
-
-await step('the Android back button returns to the course', async () => {
+await step('the menu shows the onboarding choices', async () => {
   await page.goBack();
-  await page.getByText('1 of 3 lessons').waitFor();
-});
-
-await step('profile shows stats and started courses', async () => {
   await page.goBack();
-  await page.getByRole('button', { name: 'Profile' }).click();
-  await page.getByText('Completed').first().waitFor();
-  await page.getByText('My courses').waitFor();
+  await page.getByRole('button', { name: 'Menu' }).click();
+  await page.getByText('Exam & universities').waitFor();
+  await page.getByText('FAST, KU').waitFor();
+  await page.getByText('Package').first().waitFor();
+  await page.getByText(/Advanced/).first().waitFor();
 });
 
 await step('the service worker precaches the app shell', async () => {

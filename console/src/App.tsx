@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import {
   BookOpen,
+  ClipboardList,
   LayoutDashboard,
   Settings as SettingsIcon,
   Users as UsersIcon,
@@ -14,15 +15,17 @@ import Login from './screens/Login';
 import Dashboard from './screens/Dashboard';
 import Courses from './screens/Courses';
 import CourseEditor from './screens/CourseEditor';
+import TestBank from './screens/TestBank';
 import Users from './screens/Users';
 import Settings from './screens/Settings';
 import { isDemoMode } from './firebase';
 
-type Tab = 'dashboard' | 'courses' | 'users' | 'settings';
+type Tab = 'dashboard' | 'courses' | 'tests' | 'users' | 'settings';
 
 const TABS: { id: Tab; label: string; icon: typeof BookOpen }[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'courses', label: 'Courses', icon: BookOpen },
+  { id: 'tests', label: 'Tests', icon: ClipboardList },
   { id: 'users', label: 'Users', icon: UsersIcon },
   { id: 'settings', label: 'Settings', icon: SettingsIcon },
 ];
@@ -162,6 +165,7 @@ function Shell() {
                 />
               ))}
 
+            {tab === 'tests' && <TestBank />}
             {tab === 'users' && <Users />}
             {tab === 'settings' && <Settings />}
           </main>

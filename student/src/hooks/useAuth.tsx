@@ -13,7 +13,16 @@ import {
   signInWithEmailAndPassword,
   signOut as firebaseSignOut,
 } from 'firebase/auth';
-import { collection, doc, getDocs, limit, onSnapshot, query, setDoc } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  getDocs,
+  limit,
+  onSnapshot,
+  query,
+  setDoc,
+  updateDoc,
+} from 'firebase/firestore';
 import { auth, db, isDemoMode } from '../firebase';
 import { demoStore } from '../lib/demoStore';
 import type { AppUser, Role } from '../types';
@@ -24,6 +33,8 @@ interface AuthContextValue {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (name: string, email: string, password: string, role: Role) => Promise<void>;
   signOut: () => Promise<void>;
+  /** Persists the onboarding choices (exam, universities, package). */
+  updateProfile: (patch: Partial<AppUser>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -90,6 +101,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             email: (data?.email as string) ?? account.email ?? '',
             role: (data?.role as Role) ?? 'student',
             createdAt: (data?.createdAt as number) ?? Date.now(),
+            examId: data?.examId as string | undefined,
+            universityIds: data?.universityIds as string[] | undefined,
+            packageId: data?.packageId as string | undefined,
           });
           setLoading(false);
         },
@@ -151,6 +165,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  const updateProfile = useCallback(
+    async (patch: Partial<AppUser>) => {
+      if (!user) return;
+      if (isDemoMode) {
+        const updated = demoStore.updateUser(user.id, patch);
+        if (updated) setUser(updated);
+        return;
+      }
+      await updateDoc(doc(db, 'users', user.id), patch);
+    },
+    [user],
+  );
+
   const signOut = useCallback(async () => {
     if (isDemoMode) {
       setUser(null);
@@ -160,8 +187,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<AuthContextValue>(
-    () => ({ user, loading, signIn, signUp, signOut }),
-    [user, loading, signIn, signUp, signOut],
+    () => ({ user, loading, signIn, signUp, signOut, updateProfile }),
+    [user, loading, signIn, signUp, signOut, updateProfile],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

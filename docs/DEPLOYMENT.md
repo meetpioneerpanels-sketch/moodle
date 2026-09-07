@@ -152,9 +152,51 @@ service cloud.firestore {
         && (resource.data.userId == request.auth.uid || isStaff());
       allow write: if signedIn() && request.resource.data.userId == request.auth.uid;
     }
+
+    // Catalogue: everyone signed in reads it, only admins change it.
+    match /{catalogue}/{docId} {
+      allow read: if signedIn() && catalogue in ['exams', 'universities', 'packages'];
+      allow write: if signedIn() && role() == 'admin'
+        && catalogue in ['exams', 'universities', 'packages'];
+    }
+
+    match /tests/{testId} {
+      allow read: if signedIn();
+      allow write: if isStaff();
+    }
+
+    // Students must not be able to read the answer key ahead of an attempt.
+    // Move `correctIndex` and `explanation` into a subcollection, or gate this
+    // with a Cloud Function, before a high-stakes deployment.
+    match /questions/{questionId} {
+      allow read: if signedIn();
+      allow write: if isStaff();
+    }
+
+    match /testAttempts/{attemptId} {
+      allow read: if signedIn()
+        && (resource.data.userId == request.auth.uid || isStaff());
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      // An attempt is a record of what happened - it is never edited afterwards.
+      allow update, delete: if false;
+    }
+
+    match /doubts/{doubtId} {
+      allow read: if signedIn()
+        && (resource.data.userId == request.auth.uid || isStaff());
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if isStaff();
+      allow delete: if signedIn() && role() == 'admin';
+    }
   }
 }
 ```
+
+**One caveat worth knowing before launch:** with these rules the `questions` documents
+carry `correctIndex`, and any signed-in student can read them directly from Firestore
+rather than through the app. That is fine for practice, but for a graded test move the
+answer key out of the client's reach - a subcollection only staff can read, plus a Cloud
+Function that scores a submitted attempt server-side.
 
 Test any rule change in the Firebase console's Rules Playground before publishing - a
 mistake here locks out every student at once.
@@ -170,6 +212,8 @@ mistake here locks out every student at once.
 | PWABuilder fails its analysis | Manifest or service worker not reachable at the deployed URL | Confirm HTTPS, that `/manifest.webmanifest` and `/sw.js` return 200, and that `sw.js` registers without console errors |
 | APK installs but shows a white screen | The deployed URL changed after packaging | Redeploy to the same stable URL, or re-package |
 | YouTube video shows an error in a lesson | A watch link was stored instead of an embed link | Re-save the lesson in the console - its editor rewrites links to `youtube.com/embed/VIDEO_ID` |
+| Practice Zone shows every test as "Locked" | The tests were created with `locked: true` | Open the Test bank in the console and use the Lock/Unlock button |
+| A test opens with "No questions yet" | The test exists but its question bank is empty | Add questions in the console's Test bank; `questionCount` updates itself |
 | The app flashes white before going dark | The inline theme script in `index.html` was removed | Restore it - it sets `data-theme` before first paint (see `docs/DESIGN.md`) |
 | Offline start shows a blank page | An old service worker is cached | Bump `VERSION` in `student/public/sw.js`, redeploy, then reload twice |
 

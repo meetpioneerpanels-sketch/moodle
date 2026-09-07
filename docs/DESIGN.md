@@ -1,8 +1,10 @@
 # Design system
 
-Both apps share one visual language: a refined, minimal interface that keeps the reader's
-attention on course content rather than on the chrome around it. Everything is token-based,
-so light and dark stay in step and a rebrand is a change to a handful of variables.
+Both apps share one visual language, taken from the product design reference: a soft
+lavender-grey canvas, white cards floating on it with generous corner radii and a low, wide
+shadow, a crimson brand colour used for primary actions, and amber / sky / rose accents for
+the supporting roles. Everything is token-based, so light and dark stay in step and a
+rebrand is a change to a handful of variables.
 
 ## Tokens
 
@@ -12,55 +14,70 @@ hard-codes a hex value.
 
 | Token | Light | Dark | Used for |
 | --- | --- | --- | --- |
-| `canvas` | `#ffffff` | `#09090b` | Page background |
-| `surface` | `#ffffff` | `#121216` | Cards, rows, sticky bars |
-| `surface-2` | `#fafafa` | `#161619` | Sidebar, table headers, insets |
-| `surface-3` | `#f4f4f5` | `#1f1f25` | Hover fills, neutral chips |
-| `line` | `#e4e4e7` | `#27272e` | All 1px borders and dividers |
-| `fg` | `#18181b` | `#f4f4f5` | Primary text |
-| `muted` | `#52525b` | `#a1a1aa` | Secondary text |
-| `subtle` | `#8b8b93` | `#7a7a85` | Meta text, placeholders, icons |
-| `accent` | `#4f46e5` | `#6366f1` | Primary actions, active nav, focus |
-| `success` / `warning` / `danger` | `#059669` / `#b45309` / `#dc2626` | `#34d399` / `#fbbf24` / `#f87171` | Status only |
+| `canvas` | `#eef0f6` | `#14161f` | Page background - the cards sit on it |
+| `surface` | `#ffffff` | `#1c1f2b` | Cards, rows, sheets, bottom bar |
+| `surface-2` | `#f7f8fc` | `#222634` | Insets: solution box, date tiles |
+| `surface-3` | `#eef0f6` | `#2a2e3e` | Hover fills, neutral chips, icon tiles |
+| `line` | `#e7e9f2` | `#2e3242` | Dividers and input borders |
+| `fg` | `#2c3047` | `#eef0f6` | Primary text |
+| `muted` | `#666d88` | `#a8aec6` | Secondary text |
+| `subtle` | `#9aa0b8` | `#7c8299` | Meta text, placeholders |
+| `brand` | `#c8102e` | `#ef4358` | Primary buttons, FAB, active tab, back chevron |
+| `amber` | `#f5a623` | `#f5a623` | Stepper, chapter pills, "skipped" series |
+| `sky` | `#2d9cdb` | `#4fb3e8` | Package select, question timer bar |
+| `rose` | `#ee5a6f` | `#f4788a` | Third quick action |
+| `success` / `warning` / `danger` | `#27ae60` / `#f2994a` / `#eb5757` | `#3ecf7d` / `#f2994a` / `#f47272` | Correct, caution, incorrect |
 
-Each semantic colour has a `-soft` companion for tinted backgrounds, so a status never
-relies on a raw opacity modifier.
+Each accent has a `-soft` companion for tinted backgrounds, so a status never relies on a
+raw opacity modifier.
 
 ## Type
 
-Inter, four weights (400/500/600/700), with a system-font fallback stack. The scale is
-deliberately narrow — most interface text is 13px or 14px, headings are 18–22px at
-`-0.015em` to `-0.02em` tracking, and weight (not size) carries most of the hierarchy.
-Numbers use `tabular-nums` so stat cards and progress counters do not jitter.
-
-The one exception is lesson body copy in the student app: 17px at 1.7 line height, as
-specified in the build kit, because it is read for minutes at a time rather than scanned.
+Poppins, four weights (400/500/600/700), with a system-font fallback. Headings are
+semibold; most interface text is 13px or 14px; numbers use `tabular-nums` so timers, scores
+and stat tiles do not jitter as they count. Lesson and question body copy is 17px at 1.7
+line height, because it is read for minutes at a time rather than scanned.
 
 ## Shape and depth
 
-- Radii: `lg` (10px) for controls, `xl` (12px) for cards, full for pills and avatars.
-- Borders do the work that shadows used to: a single `1px solid var(--line)` on every card,
-  row and input. Shadows are reserved for things that float — modals, toasts, the active
-  nav pill.
-- Buttons are 40px tall in the console and 44px in the student app (Android's touch-target
-  minimum), filled for primary actions and bordered for everything else.
+- Radii: `xl` (16px) for cards and inputs, full for buttons, pills, chips and avatars.
+- Cards carry no border - they are separated from the canvas by `--shadow-card`
+  (`0 4px 20px` at 6% black), which is what gives the design its soft, floating feel.
+- Buttons are fully rounded, 44px tall in the console and 48px in the student app
+  (comfortably above Android's 44px touch-target minimum), and scale to 98% on press.
+- The round red icon button (`.icon-btn`) is a recurring motif: list-row arrows, the back
+  chevron, and the raised centre action in the bottom bar.
 
-## Course accents
+## Subject and course accents
 
-A course's `colorTheme` field is data, so the palette lives in CSS. Each `tone-*` class sets
+A subject or course colour is data, so the palette lives in CSS. Each `tone-*` class sets
 `--tone`, `--tone-soft` and `--tone-fg` for both themes, and four utilities read them:
 
 ```html
 <article class="tone-blue card">
-  <span class="tone-soft">🧮</span>   <!-- tinted badge -->
-  <span class="tone-text">Math</span> <!-- accent-coloured label -->
+  <span class="tone-soft">P</span>    <!-- tinted badge -->
+  <span class="tone-text">Physics</span>
   <div class="tone-bar"></div>        <!-- solid progress fill -->
 </article>
 ```
 
-`toneOf(course.colorTheme)` in `src/lib/theme.ts` returns the class name. This keeps the
-five course colours legible on both a white and a near-black background without a second
-palette or any per-component branching.
+`toneOf(colorTheme)` and `toneOfSubject(subject)` in `src/lib/theme.ts` return the class
+name; `hexOfSubject()` returns the literal for SVG charts, where a class cannot reach.
+Maths is red, Physics blue, Chemistry amber, English green.
+
+## Charts
+
+`src/components/charts.tsx` implements three marks with no charting dependency:
+
+- **`Donut`** - a thick rounded ring with a number in the middle. Used three-up for
+  correct / incorrect / seconds, and once for accuracy.
+- **`MultiRing`** - concentric rings, one per subject, with the overall figure in the
+  centre. This is the "All Subjects Overall Statistics" chart.
+- **`BarChart`** - grouped vertical bars with a value axis and grid lines. One series for
+  time-per-question, three (correct / incorrect / skipped) for the difficulty analysis.
+
+All three read theme tokens for their track and grid colours, and carry an `aria-label`
+describing the data, so a screen reader gets the numbers a sighted user reads off the axis.
 
 ## Theming
 
@@ -68,21 +85,22 @@ palette or any per-component branching.
 writes `data-theme` on `<html>`. With `system`, it follows the OS and keeps following it if
 the OS setting changes mid-session. A matching inline script in each `index.html` applies
 the same value before first paint, so there is no flash of the wrong theme, and it also
-updates the `theme-color` meta tag so the Android status bar matches the app.
+updates the `theme-color` meta tag so the Android status bar matches the brand.
 
 The console exposes a toggle in the header and a three-way picker in Settings; the student
-app has a toggle on Home and the picker in Profile.
+app has a toggle on Home and the picker in the Menu tab.
 
 ## Motion
 
-Short and functional: 150ms colour transitions, a 160ms scale-in for modals, a 180ms
-slide-up for toasts, and a 400ms eased sweep on progress rings and bars. The confetti burst
-on first publish and lesson completion is the one piece of purely celebratory motion, and it
-respects `prefers-reduced-motion`.
+Short and functional: 150ms colour transitions, a 180ms scale-in for dialogs, a 200ms
+slide-up for sheets and toasts, a 600ms eased sweep on donut rings, and a linear
+one-second step on the question countdown so it reads as a clock rather than an animation.
+The confetti burst on a strong test result and on lesson completion is the only purely
+celebratory motion, and it respects `prefers-reduced-motion`.
 
 ## Accessibility
 
-Focus is never removed — `*:focus-visible` draws a 3px accent ring on every interactive
-element. Colour is never the only signal: published state, progress and errors all carry
-text or an icon alongside the hue. Body and secondary text meet WCAG AA against their
-surfaces in both themes.
+Focus is never removed - `*:focus-visible` draws a 3px brand ring on every interactive
+element. Colour is never the only signal: a wrong answer carries an X icon as well as red,
+a correct one a check; locked tests carry a padlock and the word "Locked". Body and
+secondary text meet WCAG AA against their surfaces in both themes.
