@@ -159,6 +159,8 @@ export interface BarSeries {
   label: string;
   color: string;
   values: number[];
+  /** Optional per-category colours, for a single series split by category. */
+  colors?: string[];
 }
 
 /**
@@ -222,14 +224,15 @@ export function BarChart({
               <div key={category} className="flex flex-1 items-end justify-center gap-[3px]">
                 {series.map((item) => {
                   const value = item.values[index] ?? 0;
+                  const color = item.colors?.[index] ?? item.color;
                   return (
                     <span
                       key={item.label}
                       className="w-full max-w-[10px] rounded-t-[3px] transition-[height] duration-500"
                       style={{
                         height: `${Math.max(value > 0 ? 3 : 0, (value / ceiling) * height)}px`,
-                        backgroundImage: `linear-gradient(180deg, ${item.color} 0%, ${item.color}b0 100%)`,
-                        boxShadow: value > 0 ? `0 2px 6px -2px ${item.color}80` : undefined,
+                        backgroundImage: `linear-gradient(180deg, ${color} 0%, ${color}b0 100%)`,
+                        boxShadow: value > 0 ? `0 2px 6px -2px ${color}80` : undefined,
                       }}
                     />
                   );

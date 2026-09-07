@@ -160,7 +160,7 @@ export default function TestBank() {
                   key={question.id}
                   className="group flex items-start gap-3 bg-surface px-4 py-3 transition-colors hover:bg-surface-2"
                 >
-                  <span className="mt-0.5 w-5 shrink-0 text-center text-[13px] tabular-nums text-subtle">
+                  <span className="tone-soft mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-2xs font-bold tabular-nums">
                     {index + 1}
                   </span>
                   <div className="min-w-0 flex-1">
@@ -265,8 +265,8 @@ export default function TestBank() {
             type="button"
             onClick={() => setSubject(item)}
             aria-pressed={subject === item}
-            className={`h-8 shrink-0 rounded-lg px-3.5 text-[13px] font-medium transition-colors ${
-              subject === item ? 'bg-brand text-white' : 'bg-surface text-muted shadow-xs'
+            className={`h-8 shrink-0 rounded-lg px-3.5 text-[13px] font-medium transition-all ${
+              subject === item ? 'fill-brand' : 'relief-press bg-surface text-muted'
             }`}
           >
             {item}
@@ -287,13 +287,16 @@ export default function TestBank() {
           {visible.map((test) => (
             <li
               key={test.id}
-              className="group flex items-center gap-3 bg-surface px-4 py-3 transition-colors hover:bg-surface-2"
+              className={`${toneOfSubject(test.subject)} group flex items-center gap-3 bg-surface px-4 py-3 transition-colors hover:bg-surface-2`}
             >
               <button
                 type="button"
                 onClick={() => setOpenTestId(test.id)}
                 className="flex min-w-0 flex-1 items-center gap-3 text-left"
               >
+                <span className="tone-soft flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-2xs font-bold">
+                  {test.subject[0]}
+                </span>
                 <span className="chip-neutral shrink-0">{test.chapter}</span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-medium">{test.title}</span>

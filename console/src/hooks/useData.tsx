@@ -25,12 +25,14 @@ import type {
   AppUser,
   Course,
   CourseDraft,
+  Doubt,
   Lesson,
   LessonDraft,
   Question,
   QuestionDraft,
   Role,
   Test,
+  TestAttempt,
   TestDraft,
   University,
 } from '../types';
@@ -42,6 +44,9 @@ interface DataContextValue {
   tests: Test[];
   questions: Question[];
   universities: University[];
+  /** Every student's submitted attempts - the raw material for Insights. */
+  attempts: TestAttempt[];
+  doubts: Doubt[];
   loading: boolean;
   /** True while the realtime listeners are attached (drives the "Live" dot). */
   live: boolean;
@@ -61,6 +66,7 @@ interface DataContextValue {
   createQuestion: (testId: string, draft: QuestionDraft) => Promise<void>;
   updateQuestion: (questionId: string, draft: QuestionDraft) => Promise<void>;
   deleteQuestion: (questionId: string, testId: string) => Promise<void>;
+  answerDoubt: (doubtId: string, answer: string) => Promise<void>;
 }
 
 const DataContext = createContext<DataContextValue | null>(null);
@@ -80,6 +86,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [tests, setTests] = useState<Test[]>([]);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [universities, setUniversities] = useState<University[]>([]);
+  const [attempts, setAttempts] = useState<TestAttempt[]>([]);
+  const [doubts, setDoubts] = useState<Doubt[]>([]);
   const [loading, setLoading] = useState(true);
   const [live, setLive] = useState(false);
 
@@ -93,6 +101,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
         setTests([...demoStore.tests]);
         setQuestions([...demoStore.questions]);
         setUniversities([...demoStore.universities]);
+        setAttempts([...demoStore.attempts]);
+        setDoubts([...demoStore.doubts]);
       };
       pull();
       setLoading(false);
@@ -132,6 +142,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
       ['tests', (docs) => setTests(docs as unknown as Test[])],
       ['questions', (docs) => setQuestions(docs as unknown as Question[])],
       ['universities', (docs) => setUniversities(docs as unknown as University[])],
+      ['testAttempts', (docs) => setAttempts(docs as unknown as TestAttempt[])],
+      ['doubts', (docs) => setDoubts(docs as unknown as Doubt[])],
     ];
     const stopExtras = extras.map(([name, apply]) =>
       onSnapshot(
@@ -347,6 +359,15 @@ export function DataProvider({ children }: { children: ReactNode }) {
     [questions],
   );
 
+  const answerDoubt = useCallback(async (doubtId: string, answer: string) => {
+    const patch = { answer, status: 'answered' as const, answeredAt: Date.now() };
+    if (isDemoMode) {
+      demoStore.answerDoubt(doubtId, answer);
+      return;
+    }
+    await updateDoc(doc(db, 'doubts', doubtId), patch);
+  }, []);
+
   const setUserRole = useCallback(async (userId: string, role: Role) => {
     if (isDemoMode) {
       demoStore.setUserRole(userId, role);
@@ -363,6 +384,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
       tests,
       questions,
       universities,
+      attempts,
+      doubts,
       loading,
       live,
       createCourse,
@@ -381,6 +404,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       createQuestion,
       updateQuestion,
       deleteQuestion,
+      answerDoubt,
     }),
     [
       courses,
@@ -389,6 +413,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
       tests,
       questions,
       universities,
+      attempts,
+      doubts,
       loading,
       live,
       createCourse,
@@ -407,6 +433,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       createQuestion,
       updateQuestion,
       deleteQuestion,
+      answerDoubt,
     ],
   );
 

@@ -435,7 +435,9 @@ function buildSeedAttempts(): TestAttempt[] {
   const freeTests = seedTests.filter((test) => !test.locked);
 
   // Day offsets from today - two on day 0 and one yesterday keep a streak alive.
-  const dayOffsets = [0, 0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 14];
+  // Enough of them that individual tests are attempted more than once, which is
+  // what makes a per-question miss rate meaningful.
+  const dayOffsets = [0, 0, 1, 1, 2, 3, 4, 5, 6, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
 
   // Walk the subjects in rotation so every ring on the analytics screen has a
   // reading; cycling the flat list would have left the last subject at zero.
@@ -447,7 +449,8 @@ function buildSeedAttempts(): TestAttempt[] {
 
   dayOffsets.forEach((dayOffset, index) => {
     const subject = subjects[index % subjects.length]!;
-    const pool = bySubject.get(subject)!;
+    // Draw from the first two chapters of each subject so attempts overlap.
+    const pool = bySubject.get(subject)!.slice(0, 2);
     const test = pool[Math.floor(index / subjects.length) % pool.length]!;
     const questions = seedQuestions
       .filter((question) => question.testId === test.id)
@@ -625,6 +628,15 @@ class DemoStore {
     this.attempts = [...this.attempts, created];
     this.emit();
     return created;
+  }
+
+  answerDoubt(doubtId: string, answer: string): void {
+    this.doubts = this.doubts.map((doubt) =>
+      doubt.id === doubtId
+        ? { ...doubt, answer, status: 'answered' as const, answeredAt: Date.now() }
+        : doubt,
+    );
+    this.emit();
   }
 
   addDoubt(doubt: Omit<Doubt, 'id'>): Doubt {

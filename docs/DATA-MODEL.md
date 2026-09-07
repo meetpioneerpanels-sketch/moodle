@@ -73,8 +73,8 @@ lesson and completing twice is idempotent.
 | `completed` | boolean | |
 | `completedAt` | number | Also feeds the streak counter on Home |
 
-Written by the student app; read by the student app today, and by console dashboards in a
-future version.
+Written by the student app; read by the student app's analytics and by the console's
+Insights screen, which rolls attempts up per test and computes a per-question miss rate.
 
 ## `exams`, `universities`, `packages`
 
@@ -154,6 +154,9 @@ Written by the student app on submit; the report and analytics read nothing else
 | `answer` | string | Filled in by a teacher |
 | `createdAt` / `answeredAt` | number | |
 
+Written by the student app, read and answered by the console's Doubts inbox. Setting
+`answer` flips `status` to `answered` and stamps `answeredAt`.
+
 ## Queries in use
 
 | App | Query | Index |
@@ -165,6 +168,7 @@ Written by the student app on submit; the report and analytics read nothing else
 | Console | whole `tests`, `questions`, `universities` collections | none needed |
 | Student | `testAttempts where userId == uid` | single-field, automatic |
 | Student | `doubts where userId == uid` | single-field, automatic |
+| Console | whole `testAttempts` and `doubts` collections | none needed |
 
 ## Demo seed
 

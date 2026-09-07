@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import {
+  BarChart3,
   BookOpen,
   ClipboardList,
   LayoutDashboard,
+  MessageCircleQuestion,
   Settings as SettingsIcon,
   Users as UsersIcon,
   X,
@@ -16,19 +18,33 @@ import Dashboard from './screens/Dashboard';
 import Courses from './screens/Courses';
 import CourseEditor from './screens/CourseEditor';
 import TestBank from './screens/TestBank';
+import Doubts from './screens/Doubts';
+import Insights from './screens/Insights';
 import Users from './screens/Users';
 import Settings from './screens/Settings';
 import AmbientBackground from './components/AmbientBackground';
 import { isDemoMode } from './firebase';
 
-type Tab = 'dashboard' | 'courses' | 'tests' | 'users' | 'settings';
+type Tab = 'dashboard' | 'courses' | 'tests' | 'doubts' | 'insights' | 'users' | 'settings';
 
-const TABS: { id: Tab; label: string; icon: typeof BookOpen }[] = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'courses', label: 'Courses', icon: BookOpen },
-  { id: 'tests', label: 'Tests', icon: ClipboardList },
-  { id: 'users', label: 'Users', icon: UsersIcon },
-  { id: 'settings', label: 'Settings', icon: SettingsIcon },
+interface TabSpec {
+  id: Tab;
+  label: string;
+  icon: typeof BookOpen;
+  /** Tabs only an admin may open. */
+  adminOnly?: boolean;
+  /** Shown on the phone tab bar; the rest live in the sidebar only. */
+  primary?: boolean;
+}
+
+const TABS: TabSpec[] = [
+  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, primary: true },
+  { id: 'courses', label: 'Courses', icon: BookOpen, primary: true },
+  { id: 'tests', label: 'Tests', icon: ClipboardList, primary: true },
+  { id: 'doubts', label: 'Doubts', icon: MessageCircleQuestion, primary: true },
+  { id: 'insights', label: 'Insights', icon: BarChart3 },
+  { id: 'users', label: 'Users', icon: UsersIcon, adminOnly: true },
+  { id: 'settings', label: 'Settings', icon: SettingsIcon, primary: true },
 ];
 
 function DemoBanner() {
@@ -56,7 +72,7 @@ function DemoBanner() {
 
 function Shell() {
   const { user, loading } = useAuth();
-  const { live } = useData();
+  const { live, doubts } = useData();
   const [tab, setTab] = useState<Tab>('dashboard');
   const [openCourseId, setOpenCourseId] = useState<string | null>(null);
   const [newCourseOpen, setNewCourseOpen] = useState(false);
@@ -80,6 +96,9 @@ function Shell() {
   }
 
   const activeLabel = TABS.find((item) => item.id === tab)?.label ?? '';
+  // Teachers get the whole workspace except user administration.
+  const visibleTabs = TABS.filter((item) => !item.adminOnly || user.role === 'admin');
+  const openDoubts = doubts.filter((doubt) => doubt.status === 'open').length;
 
   return (
     <div className="flex h-[100dvh] flex-col">
@@ -97,7 +116,7 @@ function Shell() {
             <span className="chip-neutral ml-auto">Console</span>
           </div>
 
-          {TABS.map(({ id, label, icon: Icon }) => (
+          {visibleTabs.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               type="button"
@@ -110,6 +129,11 @@ function Shell() {
               }`}
             >
               <Icon className="h-4 w-4" /> {label}
+              {id === 'doubts' && openDoubts > 0 && (
+                <span className="ml-auto rounded-full bg-brand px-1.5 text-[10px] font-bold text-white">
+                  {openDoubts}
+                </span>
+              )}
             </button>
           ))}
 
@@ -153,6 +177,8 @@ function Shell() {
                   setNewCourseOpen(true);
                 }}
                 onGoToCourses={() => goToTab('courses')}
+                onGoToDoubts={() => goToTab('doubts')}
+                onGoToTests={() => goToTab('tests')}
               />
             )}
 
@@ -168,7 +194,9 @@ function Shell() {
               ))}
 
             {tab === 'tests' && <TestBank />}
-            {tab === 'users' && <Users />}
+            {tab === 'doubts' && <Doubts />}
+            {tab === 'insights' && <Insights />}
+            {tab === 'users' && user.role === 'admin' && <Users />}
             {tab === 'settings' && <Settings />}
           </main>
         </div>
@@ -176,19 +204,24 @@ function Shell() {
 
       {/* Bottom navigation (mobile) */}
       <nav className="glass fixed bottom-0 left-0 right-0 z-40 flex border-t lg:hidden">
-        {TABS.map(({ id, label, icon: Icon }) => (
-          <button
-            key={id}
-            type="button"
-            onClick={() => goToTab(id)}
-            aria-current={tab === id ? 'page' : undefined}
-            className={`flex flex-1 flex-col items-center gap-1 py-2.5 text-2xs font-medium transition-colors ${
-              tab === id ? 'text-brand' : 'text-subtle'
-            }`}
-          >
-            <Icon className="h-4.5 w-4.5" style={{ width: 18, height: 18 }} /> {label}
-          </button>
-        ))}
+        {visibleTabs
+          .filter((item) => item.primary)
+          .map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => goToTab(id)}
+              aria-current={tab === id ? 'page' : undefined}
+              className={`relative flex flex-1 flex-col items-center gap-1 py-2.5 text-2xs font-medium transition-colors ${
+                tab === id ? 'text-brand' : 'text-subtle'
+              }`}
+            >
+              <Icon style={{ width: 18, height: 18 }} /> {label}
+              {id === 'doubts' && openDoubts > 0 && (
+                <span className="absolute right-[22%] top-1.5 h-1.5 w-1.5 rounded-full bg-brand" />
+              )}
+            </button>
+          ))}
       </nav>
     </div>
   );

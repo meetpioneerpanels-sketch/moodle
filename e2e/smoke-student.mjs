@@ -219,6 +219,28 @@ await step('the manifest is linked and APK-ready', async () => {
   }
 });
 
+await step('a teacher account is sent to the console, not student onboarding', async () => {
+  const staff = await context.newPage();
+  await staff.goto(BASE, { waitUntil: 'domcontentloaded' });
+  await staff.getByLabel('Email').fill('teacher.demo@school.edu');
+  await staff.getByLabel('Password').fill('password123');
+  await staff.getByRole('button', { name: 'Create an account' }).click();
+  await staff.getByLabel('Your name').fill('Bilal Ahmed');
+  await staff.getByLabel('Email').fill('teacher.demo@school.edu');
+  await staff.getByLabel('Password').fill('password123');
+  await staff.getByRole('button', { name: 'teacher', exact: true }).click();
+  await staff.getByRole('button', { name: 'Sign up' }).click();
+
+  await staff.getByRole('heading', { name: 'This app is the student experience' }).waitFor();
+  if (await staff.getByRole('heading', { name: 'Choose your Courses' }).isVisible().catch(() => false)) {
+    throw new Error('a teacher should not be pushed through student onboarding');
+  }
+  // They can still look around deliberately.
+  await staff.getByRole('button', { name: 'Preview the student app' }).click();
+  await staff.getByRole('heading', { name: 'Choose your Courses' }).waitFor();
+  await staff.close();
+});
+
 await step('the app still boots offline', async () => {
   await context.setOffline(true);
   await page.reload({ waitUntil: 'domcontentloaded' });

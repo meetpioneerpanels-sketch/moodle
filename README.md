@@ -87,7 +87,8 @@ console/                Teacher & admin web console (React 18 + TS + Tailwind)
   src/firebase.ts       Firebase config + demo-mode switch
   src/types.ts          The shared Firestore schema
   src/hooks/            Auth, data (Firestore or demo store), toasts
-  src/screens/          Login, Dashboard, Courses, Course editor, Test bank, Users, Settings
+  src/screens/          Login, Dashboard, Courses, Course editor, Test bank,
+                        Doubts inbox, Insights, Users, Settings
 student/                Student learning PWA (same stack, mobile-first)
   public/manifest.webmanifest, public/sw.js, public/icons/
   src/screens/          Login, onboarding, Home, Practice Zone, Test player, Score report,
@@ -126,7 +127,26 @@ See [`docs/DESIGN.md`](docs/DESIGN.md).
 ## Roles
 
 Three roles, one bootstrap rule: **the first account created in a fresh Firebase project
-becomes the admin**, so you can never lock yourself out. Admins manage everything and can
-change any user's role from the Users screen; teachers manage the courses they own;
-students read published courses only and never see drafts. Locked topical tests open with
-the Advanced package.
+becomes the admin**, so you can never lock yourself out.
+
+| | Admin | Teacher | Student |
+| --- | --- | --- | --- |
+| Dashboard, Courses, Test bank | Whole school | Their own courses; shared test bank | - |
+| Doubts inbox, Insights | Yes | Yes | - |
+| Users and role changes | Yes | No | - |
+| Practice Zone, tests, analytics | - | - | Yes |
+
+Students read published courses only and never see drafts, and locked topical tests open
+with the Advanced package. Staff accounts can sign into the student app - the accounts are
+shared - but it tells them their work lives in the console rather than running them through
+student onboarding, with a deliberate "preview the student app" way in.
+
+### What a teacher does in the console
+
+- **Courses and lessons** they own, published with one toggle.
+- **Test bank** - topical tests per subject and chapter, with question banks, worked
+  solutions, per-question difficulty and a lock for paid content.
+- **Doubts inbox** - the teaching side of Ask-your-Doubt: read what students asked, filter
+  by open/answered and subject, and reply. The answer appears in the student's app.
+- **Insights** - how students actually perform: attempts, accuracy by subject, per-test
+  scores, and the questions being missed by half the class or more.

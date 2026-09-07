@@ -109,6 +109,34 @@ await step('admins can change a role from the Users screen', async () => {
   await page.getByText('Liam Novak is now a teacher').waitFor();
 });
 
+await step('the doubts inbox lists what students asked', async () => {
+  await page.getByRole('button', { name: 'Doubts' }).first().click();
+  await page.getByRole('heading', { name: 'Doubts' }).waitFor();
+  await page.getByText('photoelectric').first().waitFor();
+  await page.getByText('Waiting').first().waitFor();
+});
+
+await step('answering a doubt closes it out', async () => {
+  await page.getByRole('button', { name: 'Answer', exact: true }).first().click();
+  await page
+    .getByLabel('Your answer')
+    .fill('More photons means more electrons, but each electron\u2019s energy depends only on the photon frequency.');
+  await page.getByRole('button', { name: 'Send answer' }).click();
+  await page.getByText('Answer sent to the student').waitFor();
+  // It leaves the Open filter once answered.
+  await page.getByRole('button', { name: 'Answered', exact: true }).click();
+  await page.getByText('Your answer').first().waitFor();
+});
+
+await step('insights summarise attempts and the hardest questions', async () => {
+  await page.getByRole('button', { name: 'Insights' }).first().click();
+  await page.getByRole('heading', { name: 'Insights' }).waitFor();
+  await page.getByText('Accuracy by subject').waitFor();
+  await page.getByText('Test performance').waitFor();
+  const attemptsText = await page.getByText('Attempts', { exact: true }).first().isVisible();
+  if (!attemptsText) throw new Error('attempt totals are missing');
+});
+
 await step('settings reports demo mode', async () => {
   await page.getByRole('button', { name: 'Settings' }).first().click();
   await page.getByText('Firebase connection').waitFor();
@@ -121,6 +149,35 @@ await step('the sidebar becomes bottom navigation on a phone', async () => {
   if (!(await page.locator('nav.fixed').isVisible())) {
     throw new Error('bottom navigation is not visible at 390 px');
   }
+});
+
+// --- teacher role ------------------------------------------------------------
+
+await step('a teacher sees the workspace but not user administration', async () => {
+  // The previous step left the page at phone width, where the sidebar is hidden.
+  await page.setViewportSize({ width: 1280, height: 900 });
+  // Sign back in as a teacher rather than the admin used so far.
+  await page.getByRole('button', { name: 'Settings' }).first().click();
+  await page.getByRole('button', { name: 'Sign out' }).click();
+  await page.getByRole('heading', { name: 'Welcome back' }).waitFor();
+
+  await page.getByLabel('Email').fill('amara@school.edu');
+  await page.getByLabel('Password').fill('password123');
+  await page.getByRole('button', { name: 'Sign in' }).click();
+  // The shell keeps whichever tab was open before sign-out, so go to the
+  // dashboard explicitly rather than assuming it.
+  await page.getByRole('button', { name: 'Dashboard' }).first().click();
+  await page.getByRole('heading', { name: /^Hi / }).waitFor();
+
+  // The seeded teacher account keeps the teaching tools...
+  for (const label of ['Dashboard', 'Courses', 'Tests', 'Doubts', 'Insights']) {
+    await page.getByRole('button', { name: label }).first().waitFor();
+  }
+  // ...but Users is admin-only.
+  if ((await page.getByRole('button', { name: 'Users' }).count()) > 0) {
+    throw new Error('a teacher should not see the Users tab');
+  }
+  await page.getByText('You are signed in as a teacher').waitFor();
 });
 
 report(errors);

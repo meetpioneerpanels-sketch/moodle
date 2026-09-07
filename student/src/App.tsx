@@ -15,6 +15,7 @@ import Analytics from './screens/Analytics';
 import LiveClasses from './screens/LiveClasses';
 import AskDoubt from './screens/AskDoubt';
 import Menu from './screens/Menu';
+import TeacherNotice from './screens/TeacherNotice';
 import Browse from './screens/Browse';
 import CourseDetail from './screens/CourseDetail';
 import LessonPlayer from './screens/LessonPlayer';
@@ -101,6 +102,8 @@ function Shell() {
   const [draftUniversities, setDraftUniversities] = useState<string[]>([]);
   const [draftExam, setDraftExam] = useState<string | null>(null);
   const [draftPackage, setDraftPackage] = useState<string | null>(null);
+  /** A teacher who chose to look around the student app anyway. */
+  const [previewAsStudent, setPreviewAsStudent] = useState(false);
 
   const current = stack[stack.length - 1]!;
 
@@ -148,6 +151,12 @@ function Shell() {
   }
 
   if (!user) return <Login />;
+
+  // Staff accounts belong in the console; say so instead of running them
+  // through student onboarding.
+  if (user.role !== 'student' && !previewAsStudent) {
+    return <TeacherNotice onPreview={() => setPreviewAsStudent(true)} />;
+  }
 
   // First run: pick the exam and universities, then a package.
   const needsOnboarding = !user.universityIds?.length || !user.packageId;
