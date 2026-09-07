@@ -1,11 +1,11 @@
 import { useMemo, useState, type MouseEvent as ReactMouseEvent } from 'react';
-import { Plus, Search } from 'lucide-react';
+import { BookOpen, Plus, Search } from 'lucide-react';
 import { useData } from '../hooks/useData';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { EmptyState, SkeletonGrid, Toggle } from '../components/ui';
 import CourseModal from '../components/CourseModal';
-import { themeOf } from '../lib/theme';
+import { toneOf } from '../lib/theme';
 import { burstConfetti } from '../lib/confetti';
 import { CATEGORIES, type Course, type CourseDraft } from '../types';
 
@@ -21,7 +21,7 @@ export default function Courses({ onOpenCourse, newCourseOpen, setNewCourseOpen 
   const { toast } = useToast();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All');
-  /** Courses that have been published at least once this session - keeps confetti a first-time treat. */
+  /** Courses published at least once this session - keeps confetti a first-time treat. */
   const [celebrated, setCelebrated] = useState<Set<string>>(new Set());
 
   const canEdit = (course: Course) => user?.role === 'admin' || course.teacherId === user?.id;
@@ -35,8 +35,7 @@ export default function Courses({ onOpenCourse, newCourseOpen, setNewCourseOpen 
         !term ||
         course.title.toLowerCase().includes(term) ||
         course.description.toLowerCase().includes(term);
-      const matchesCategory = category === 'All' || course.category === category;
-      return matchesTerm && matchesCategory;
+      return matchesTerm && (category === 'All' || course.category === category);
     });
   }, [courses, user, search, category]);
 
@@ -56,28 +55,24 @@ export default function Courses({ onOpenCourse, newCourseOpen, setNewCourseOpen 
   }
 
   return (
-    <div className="space-y-6">
-      <header className="flex flex-wrap items-center gap-3">
+    <div className="space-y-5">
+      <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-3xl">Courses</h1>
-          <p className="mt-1 font-bold text-wolf">
+          <h1 className="text-xl font-semibold tracking-[-0.015em]">Courses</h1>
+          <p className="mt-1 text-[13px] text-muted">
             {visible.length} course{visible.length === 1 ? '' : 's'}
           </p>
         </div>
-        <button
-          type="button"
-          className="btn-primary ml-auto"
-          onClick={() => setNewCourseOpen(true)}
-        >
-          <Plus className="h-4 w-4" /> New course
+        <button type="button" className="btn-primary btn-sm" onClick={() => setNewCourseOpen(true)}>
+          <Plus className="h-3.5 w-3.5" /> New course
         </button>
       </header>
 
-      <div className="flex flex-col gap-3 sm:flex-row">
+      <div className="flex flex-col gap-2 sm:flex-row">
         <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-wolf" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-subtle" />
           <input
-            className="input pl-12"
+            className="input pl-9"
             placeholder="Search courses"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
@@ -85,7 +80,7 @@ export default function Courses({ onOpenCourse, newCourseOpen, setNewCourseOpen 
           />
         </div>
         <select
-          className="input sm:w-52"
+          className="input sm:w-44"
           value={category}
           onChange={(event) => setCategory(event.target.value)}
           aria-label="Filter by category"
@@ -103,66 +98,68 @@ export default function Courses({ onOpenCourse, newCourseOpen, setNewCourseOpen 
         <SkeletonGrid />
       ) : visible.length === 0 ? (
         <EmptyState
-          emoji={search || category !== 'All' ? '🔍' : '📚'}
-          title={
+          icon={search || category !== 'All' ? <Search className="h-4 w-4" /> : <BookOpen className="h-4 w-4" />}
+          title={search || category !== 'All' ? 'No matches' : 'No courses yet'}
+          description={
             search || category !== 'All'
-              ? 'Nothing matches that search yet.'
-              : 'No courses yet - create your first one!'
+              ? 'Try a different search or category.'
+              : 'Create your first course to get started.'
           }
           action={
-            <button type="button" className="btn-primary" onClick={() => setNewCourseOpen(true)}>
-              <Plus className="h-4 w-4" /> New course
+            <button
+              type="button"
+              className="btn-primary btn-sm"
+              onClick={() => setNewCourseOpen(true)}
+            >
+              <Plus className="h-3.5 w-3.5" /> New course
             </button>
           }
         />
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {visible.map((course) => {
-            const theme = themeOf(course.colorTheme);
-            return (
-              <article key={course.id} className="card flex flex-col overflow-hidden">
-                <button
-                  type="button"
-                  onClick={() => onOpenCourse(course.id)}
-                  className="flex flex-1 flex-col items-start gap-3 p-5 text-left"
-                >
-                  <span
-                    className={`flex h-14 w-14 items-center justify-center rounded-2xl text-3xl ${theme.bg}`}
-                    aria-hidden="true"
-                  >
-                    {course.emoji}
-                  </span>
-                  <h2 className="text-lg leading-snug">{course.title}</h2>
-                  <p className="line-clamp-2 text-sm font-bold text-wolf">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {visible.map((course) => (
+            <article
+              key={course.id}
+              className={`${toneOf(course.colorTheme)} card card-hover flex flex-col`}
+            >
+              <button
+                type="button"
+                onClick={() => onOpenCourse(course.id)}
+                className="flex flex-1 flex-col items-start gap-3 p-4 text-left"
+              >
+                <span className="tone-soft flex h-10 w-10 items-center justify-center rounded-lg text-lg">
+                  {course.emoji}
+                </span>
+                <span className="w-full">
+                  <span className="block truncate text-sm font-medium">{course.title}</span>
+                  <span className="mt-1 line-clamp-2 block text-[13px] leading-relaxed text-subtle">
                     {course.description || 'No description yet.'}
-                  </p>
-                  <div className="mt-auto flex flex-wrap items-center gap-2 pt-2">
-                    <span className={`chip ${theme.soft} ${theme.text}`}>{course.category}</span>
-                    <span className="chip bg-swan/60 text-wolf">
-                      {course.lessonCount} lesson{course.lessonCount === 1 ? '' : 's'}
-                    </span>
-                  </div>
-                </button>
-                <div className="flex items-center gap-3 border-t-2 border-swan px-5 py-3">
-                  <span
-                    className={`text-xs font-extrabold uppercase tracking-wide ${
-                      course.published ? 'text-grass-dark' : 'text-wolf'
-                    }`}
-                  >
-                    {course.published ? 'Published' : 'Draft'}
                   </span>
-                  <span className="ml-auto">
-                    <Toggle
-                      checked={course.published}
-                      disabled={!canEdit(course)}
-                      onChange={(next, event) => handlePublish(course, next, event)}
-                      label={`Publish ${course.title}`}
-                    />
+                </span>
+                <span className="mt-auto flex flex-wrap items-center gap-1.5 pt-1">
+                  <span className="chip tone-soft">{course.category}</span>
+                  <span className="chip-neutral">
+                    {course.lessonCount} lesson{course.lessonCount === 1 ? '' : 's'}
                   </span>
-                </div>
-              </article>
-            );
-          })}
+                </span>
+              </button>
+              <div className="flex items-center gap-2 border-t border-line px-4 py-2.5">
+                <span
+                  className={`text-[13px] ${course.published ? 'text-success' : 'text-subtle'}`}
+                >
+                  {course.published ? 'Published' : 'Draft'}
+                </span>
+                <span className="ml-auto">
+                  <Toggle
+                    checked={course.published}
+                    disabled={!canEdit(course)}
+                    onChange={(next, event) => handlePublish(course, next, event)}
+                    label={`Publish ${course.title}`}
+                  />
+                </span>
+              </div>
+            </article>
+          ))}
         </div>
       )}
 

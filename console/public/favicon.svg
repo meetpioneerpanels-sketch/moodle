@@ -1,4 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <rect width="100" height="100" rx="22" fill="#58CC02"/>
-  <text x="50" y="72" text-anchor="middle" font-size="58">🎓</text>
+  <rect width="100" height="100" rx="24" fill="#4f46e5"/>
+  <g fill="#FFFFFF">
+    <path d="M50 24 L90 40 L50 56 L10 40 Z"/>
+    <path d="M28 47 L50 55.8 L72 47 L72 62 C72 70.5 62.2 76 50 76 C37.8 76 28 70.5 28 62 Z"/>
+    <path d="M87 42 h2.6 v17 h-2.6 z"/>
+    <circle cx="88.3" cy="62.5" r="4"/>
+  </g>
 </svg>

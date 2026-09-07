@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
-import { Flame, Play } from 'lucide-react';
+import { ChevronRight, Flame, Sparkles } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useData } from '../hooks/useData';
-import { Avatar, EmptyState, LiveDot, ProgressRing, SkeletonList } from '../components/ui';
-import { themeOf } from '../lib/theme';
+import { Avatar, EmptyState, LiveDot, ProgressRing, SkeletonList, ThemeToggle } from '../components/ui';
+import { toneOf } from '../lib/theme';
 import type { Course, Lesson, LessonProgress } from '../types';
 
 /** Consecutive days, ending today or yesterday, on which a lesson was completed. */
@@ -17,9 +17,8 @@ function streakOf(progress: LessonProgress[]): number {
 
   const dayMs = 24 * 60 * 60 * 1000;
   const today = new Date();
-  let cursor = days.has(today.toDateString())
-    ? today
-    : new Date(today.getTime() - dayMs); // a streak survives until the end of the next day
+  // A streak survives until the end of the following day.
+  let cursor = days.has(today.toDateString()) ? today : new Date(today.getTime() - dayMs);
   if (!days.has(cursor.toDateString())) return 0;
 
   let streak = 0;
@@ -59,83 +58,79 @@ export default function Home({ onOpenCourse, onOpenLesson }: Props) {
       <header className="flex items-center gap-3">
         <Avatar name={user?.name ?? 'Student'} />
         <div className="min-w-0 flex-1">
-          <p className="truncate text-lg font-extrabold leading-tight">
-            Hi {user?.name?.split(' ')[0] ?? 'there'}!
+          <p className="truncate text-[15px] font-semibold tracking-[-0.01em]">
+            Hi {user?.name?.split(' ')[0] ?? 'there'}
           </p>
           <LiveDot live={live} />
         </div>
-        <span
-          className="flex items-center gap-1 rounded-2xl bg-fox/15 px-3 py-2 font-extrabold text-fox-dark"
-          title={`${streak}-day streak`}
-        >
-          <Flame className="h-5 w-5" /> {streak}
-        </span>
+        {streak > 0 && (
+          <span
+            className="inline-flex items-center gap-1 rounded-md bg-surface-3 px-2 py-1 text-[13px] font-medium text-muted"
+            title={`${streak}-day streak`}
+          >
+            <Flame className="h-3.5 w-3.5" /> {streak}
+          </span>
+        )}
+        <ThemeToggle />
       </header>
 
       {loading ? (
-        <SkeletonList rows={3} height="h-28" />
+        <SkeletonList rows={3} height="h-24" />
       ) : courses.length === 0 ? (
         <EmptyState
-          emoji="🌱"
-          title="No courses published yet - check back soon!"
+          icon={<Sparkles className="h-4 w-4" />}
+          title="Nothing published yet"
+          description="Your courses appear here the moment a teacher publishes them."
         />
       ) : (
         <>
           {nextUp && (
             <section>
-              <h2 className="mb-2 text-lg">Continue learning</h2>
+              <h2 className="mb-2 text-[13px] font-medium text-muted">Continue learning</h2>
               <button
                 type="button"
                 onClick={() => onOpenLesson(nextUp.course.id, nextUp.lesson.id)}
-                className={`w-full rounded-2xl p-5 text-left text-white shadow-sm ${themeOf(nextUp.course.colorTheme).bg}`}
+                className={`${toneOf(nextUp.course.colorTheme)} card card-hover flex w-full items-center gap-3 p-4 text-left`}
               >
-                <span className="flex items-center gap-4">
-                  <span className="text-4xl" aria-hidden="true">
-                    {nextUp.course.emoji}
+                <span className="tone-soft flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-xl">
+                  {nextUp.course.emoji}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="tone-text block truncate text-2xs font-medium">
+                    {nextUp.course.title}
                   </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-bold uppercase tracking-wide text-white/80">
-                      {nextUp.course.title}
-                    </span>
-                    <span className="block truncate text-lg font-extrabold">
-                      {nextUp.lesson.title}
-                    </span>
-                    <span className="block text-sm font-bold text-white/85">
-                      {nextUp.lesson.durationMin} min
-                    </span>
+                  <span className="mt-0.5 block truncate text-sm font-medium">
+                    {nextUp.lesson.title}
                   </span>
-                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/25">
-                    <Play className="h-6 w-6 fill-white" />
+                  <span className="block text-[13px] text-subtle">
+                    {nextUp.lesson.durationMin} min
                   </span>
                 </span>
+                <ChevronRight className="h-4 w-4 shrink-0 text-subtle" />
               </button>
             </section>
           )}
 
           <section>
-            <h2 className="mb-2 text-lg">All courses</h2>
-            <div className="no-scrollbar -mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-2">
+            <h2 className="mb-2 text-[13px] font-medium text-muted">All courses</h2>
+            <div className="no-scrollbar -mx-4 flex snap-x gap-2.5 overflow-x-auto px-4 pb-1">
               {courses.map((course) => {
-                const theme = themeOf(course.colorTheme);
                 const total = lessons.filter((lesson) => lesson.courseId === course.id).length;
                 return (
                   <button
                     key={course.id}
                     type="button"
                     onClick={() => onOpenCourse(course.id)}
-                    className="card w-[72vw] max-w-[260px] shrink-0 snap-start p-4 text-left"
+                    className={`${toneOf(course.colorTheme)} card card-hover w-[64vw] max-w-[220px] shrink-0 snap-start p-4 text-left`}
                   >
-                    <span className="flex items-start gap-3">
-                      <span
-                        className={`flex h-12 w-12 items-center justify-center rounded-2xl text-2xl ${theme.bg}`}
-                        aria-hidden="true"
-                      >
+                    <span className="flex items-start justify-between">
+                      <span className="tone-soft flex h-10 w-10 items-center justify-center rounded-lg text-lg">
                         {course.emoji}
                       </span>
                       <ProgressRing value={completedCount(course.id)} total={total} />
                     </span>
-                    <span className="mt-3 block truncate font-extrabold">{course.title}</span>
-                    <span className="mt-0.5 block text-sm font-bold text-wolf">
+                    <span className="mt-3 block truncate text-sm font-medium">{course.title}</span>
+                    <span className="mt-0.5 block text-[13px] text-subtle">
                       {completedCount(course.id)} of {total} lesson{total === 1 ? '' : 's'}
                     </span>
                   </button>

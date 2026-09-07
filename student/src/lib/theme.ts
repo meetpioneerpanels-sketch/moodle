@@ -1,23 +1,27 @@
 import type { ColorTheme } from '../types';
 
-interface ThemeTokens {
-  /** Solid background for emoji badges and covers. */
-  bg: string;
-  /** Softer tinted background for chips. */
-  soft: string;
-  text: string;
-  border: string;
-  hex: string;
-}
-
-export const THEME: Record<ColorTheme, ThemeTokens> = {
-  green: { bg: 'bg-grass', soft: 'bg-grass/15', text: 'text-grass-dark', border: 'border-grass-dark', hex: '#58CC02' },
-  blue: { bg: 'bg-macaw', soft: 'bg-macaw/15', text: 'text-macaw-dark', border: 'border-macaw-dark', hex: '#1CB0F6' },
-  orange: { bg: 'bg-fox', soft: 'bg-fox/15', text: 'text-fox-dark', border: 'border-fox-dark', hex: '#FF9600' },
-  purple: { bg: 'bg-beetle', soft: 'bg-beetle/15', text: 'text-beetle-dark', border: 'border-beetle-dark', hex: '#CE82FF' },
-  pink: { bg: 'bg-flamingo', soft: 'bg-flamingo/15', text: 'text-flamingo-dark', border: 'border-flamingo-dark', hex: '#FF86D0' },
+/**
+ * A course's colour lives in the data, but the palette lives in CSS. Each
+ * `tone-*` class sets --tone / --tone-soft / --tone-fg for both themes, and the
+ * `tone-solid`, `tone-soft`, `tone-text` and `tone-bar` utilities read them.
+ */
+const TONE_CLASS: Record<ColorTheme, string> = {
+  green: 'tone-green',
+  blue: 'tone-blue',
+  orange: 'tone-orange',
+  purple: 'tone-purple',
+  pink: 'tone-pink',
 };
 
-export function themeOf(theme: string | undefined): ThemeTokens {
-  return THEME[(theme as ColorTheme) ?? 'green'] ?? THEME.green;
+/** Swatch colours for the picker, where a literal value is unavoidable. */
+export const TONE_SWATCH: Record<ColorTheme, string> = {
+  green: '#10b981',
+  blue: '#3b82f6',
+  orange: '#f59e0b',
+  purple: '#8b5cf6',
+  pink: '#ec4899',
+};
+
+export function toneOf(theme: string | undefined): string {
+  return TONE_CLASS[(theme as ColorTheme) ?? 'green'] ?? TONE_CLASS.green;
 }

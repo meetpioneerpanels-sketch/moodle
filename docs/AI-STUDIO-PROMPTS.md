@@ -191,3 +191,9 @@ Small, deliberate departures made while building the real thing:
   blank page.
 - **A demo-mode sign-in derives a display name from the email**, so the greeting reads "Hi Liam"
   rather than "Hi liam@school.edu".
+- **The design system was replaced.** The prompts above specify a Duolingo-inspired look -
+  Nunito, chunky 3D buttons, `#58CC02` green. The apps now use a refined minimal system:
+  Inter, flat filled buttons, hairline borders instead of heavy shadows, a single indigo
+  accent, and a light/dark/system theme switch. The course colour themes survive as tinted
+  `tone-*` accents. See [`DESIGN.md`](DESIGN.md); the prompts are kept verbatim above as the
+  original brief.

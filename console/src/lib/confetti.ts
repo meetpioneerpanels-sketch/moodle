@@ -1,4 +1,4 @@
-const COLORS = ['#58CC02', '#1CB0F6', '#FF9600', '#FFC800', '#CE82FF', '#FF86D0'];
+const COLORS = ['#4f46e5', '#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899'];
 
 /**
  * Lightweight DOM confetti burst - no dependency, self-cleaning.

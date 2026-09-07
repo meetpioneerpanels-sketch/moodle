@@ -1,7 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Modal } from './ui';
-import { THEME } from '../lib/theme';
-import { CATEGORIES, COLOR_THEMES, EMOJI_CHOICES, type ColorTheme, type Course, type CourseDraft } from '../types';
+import { TONE_SWATCH } from '../lib/theme';
+import {
+  CATEGORIES,
+  COLOR_THEMES,
+  EMOJI_CHOICES,
+  type ColorTheme,
+  type Course,
+  type CourseDraft,
+} from '../types';
 
 const EMPTY: CourseDraft = {
   title: '',
@@ -63,16 +70,16 @@ export default function CourseModal({ open, course, onClose, onSave }: Props) {
       onClose={onClose}
       footer={
         <>
-          <button type="button" className="btn-ghost" onClick={onClose}>
+          <button type="button" className="btn-secondary btn-sm" onClick={onClose}>
             Cancel
           </button>
-          <button type="button" className="btn-primary" onClick={handleSave} disabled={busy}>
+          <button type="button" className="btn-primary btn-sm" onClick={handleSave} disabled={busy}>
             {course ? 'Save changes' : 'Create course'}
           </button>
         </>
       }
     >
-      <div className="space-y-5">
+      <div className="space-y-4">
         <div>
           <label className="label" htmlFor="course-title">
             Title
@@ -92,7 +99,7 @@ export default function CourseModal({ open, course, onClose, onSave }: Props) {
           </label>
           <textarea
             id="course-description"
-            className="input min-h-[92px] resize-y font-normal"
+            className="input min-h-[80px] resize-y leading-relaxed"
             value={draft.description}
             onChange={(event) => setDraft({ ...draft, description: event.target.value })}
             placeholder="What will students be able to do at the end?"
@@ -118,8 +125,8 @@ export default function CourseModal({ open, course, onClose, onSave }: Props) {
         </div>
 
         <div>
-          <span className="label">Emoji</span>
-          <div className="grid grid-cols-6 gap-2">
+          <span className="label">Icon</span>
+          <div className="grid grid-cols-6 gap-1.5">
             {EMOJI_CHOICES.map((emoji) => (
               <button
                 key={emoji}
@@ -127,8 +134,10 @@ export default function CourseModal({ open, course, onClose, onSave }: Props) {
                 aria-label={`Use ${emoji}`}
                 aria-pressed={draft.emoji === emoji}
                 onClick={() => setDraft({ ...draft, emoji })}
-                className={`flex h-12 items-center justify-center rounded-2xl border-2 text-2xl transition-colors ${
-                  draft.emoji === emoji ? 'border-grass bg-grass/10' : 'border-swan hover:bg-gray-50'
+                className={`flex h-10 items-center justify-center rounded-lg border text-lg transition-colors ${
+                  draft.emoji === emoji
+                    ? 'border-accent bg-accent-soft'
+                    : 'border-line hover:bg-surface-3'
                 }`}
               >
                 {emoji}
@@ -138,30 +147,27 @@ export default function CourseModal({ open, course, onClose, onSave }: Props) {
         </div>
 
         <div>
-          <span className="label">Colour theme</span>
-          <div className="flex flex-wrap gap-3">
+          <span className="label">Accent</span>
+          <div className="flex flex-wrap gap-2">
             {COLOR_THEMES.map((theme: ColorTheme) => (
               <button
                 key={theme}
                 type="button"
-                aria-label={`Use ${theme} theme`}
+                aria-label={`Use the ${theme} accent`}
                 aria-pressed={draft.colorTheme === theme}
                 onClick={() => setDraft({ ...draft, colorTheme: theme })}
-                className={`h-11 w-11 rounded-2xl ${THEME[theme].bg} transition-transform ${
+                style={{ backgroundColor: TONE_SWATCH[theme] }}
+                className={`h-7 w-7 rounded-full transition-transform ${
                   draft.colorTheme === theme
-                    ? 'ring-4 ring-ink/15 scale-105'
-                    : 'opacity-80 hover:opacity-100'
+                    ? 'ring-2 ring-fg/25 ring-offset-2 ring-offset-surface'
+                    : 'opacity-70 hover:opacity-100'
                 }`}
               />
             ))}
           </div>
         </div>
 
-        {error && (
-          <p className="rounded-2xl bg-cardinal/10 px-4 py-3 text-sm font-bold text-cardinal">
-            {error}
-          </p>
-        )}
+        {error && <p className="error-text">{error}</p>}
       </div>
     </Modal>
   );

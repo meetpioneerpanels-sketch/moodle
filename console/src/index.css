@@ -2,61 +2,270 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ---------------------------------------------------------------------------
+   Design tokens. Light is the default; [data-theme="dark"] on <html> swaps the
+   same names, so no component ever hard-codes a colour.
+   --------------------------------------------------------------------------- */
 @layer base {
+  :root {
+    color-scheme: light;
+
+    --canvas: #ffffff;
+    --surface: #ffffff;
+    --surface-2: #fafafa;
+    --surface-3: #f4f4f5;
+    --line: #e4e4e7;
+    --line-strong: #d4d4d8;
+
+    --fg: #18181b;
+    --fg-muted: #52525b;
+    --fg-subtle: #8b8b93;
+
+    --accent: #4f46e5;
+    --accent-hover: #4338ca;
+    --accent-fg: #ffffff;
+    --accent-soft: #eef2ff;
+    --accent-on-soft: #4338ca;
+
+    --success: #059669;
+    --success-soft: #ecfdf5;
+    --warning: #b45309;
+    --warning-soft: #fffbeb;
+    --danger: #dc2626;
+    --danger-hover: #b91c1c;
+    --danger-soft: #fef2f2;
+
+    --ring: rgb(79 70 229 / 0.35);
+
+    --shadow-xs: 0 1px 2px rgb(16 17 26 / 0.04);
+    --shadow-sm: 0 1px 3px rgb(16 17 26 / 0.06), 0 1px 2px rgb(16 17 26 / 0.04);
+    --shadow-md: 0 8px 24px -8px rgb(16 17 26 / 0.12), 0 2px 4px rgb(16 17 26 / 0.04);
+    --shadow-lg: 0 24px 48px -16px rgb(16 17 26 / 0.18);
+
+    --skeleton-from: #f4f4f5;
+    --skeleton-via: #e9e9ec;
+  }
+
+  [data-theme='dark'] {
+    color-scheme: dark;
+
+    --canvas: #09090b;
+    --surface: #121216;
+    --surface-2: #161619;
+    --surface-3: #1f1f25;
+    --line: #27272e;
+    --line-strong: #3a3a44;
+
+    --fg: #f4f4f5;
+    --fg-muted: #a1a1aa;
+    --fg-subtle: #7a7a85;
+
+    --accent: #6366f1;
+    --accent-hover: #818cf8;
+    --accent-fg: #ffffff;
+    --accent-soft: rgb(99 102 241 / 0.16);
+    --accent-on-soft: #a5b4fc;
+
+    --success: #34d399;
+    --success-soft: rgb(52 211 153 / 0.14);
+    --warning: #fbbf24;
+    --warning-soft: rgb(251 191 36 / 0.14);
+    --danger: #f87171;
+    --danger-hover: #ef4444;
+    --danger-soft: rgb(248 113 113 / 0.14);
+
+    --ring: rgb(129 140 248 / 0.45);
+
+    --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-sm: 0 1px 3px rgb(0 0 0 / 0.5);
+    --shadow-md: 0 8px 24px -8px rgb(0 0 0 / 0.6);
+    --shadow-lg: 0 24px 48px -16px rgb(0 0 0 / 0.7);
+
+    --skeleton-from: #1a1a20;
+    --skeleton-via: #24242b;
+  }
+
+  /* Course accents. Each course carries one of these; the tone variables let a
+     single set of utilities render it correctly in both themes. */
+  .tone-green {
+    --tone: #10b981;
+    --tone-soft: rgb(16 185 129 / 0.12);
+    --tone-fg: #047857;
+  }
+  .tone-blue {
+    --tone: #3b82f6;
+    --tone-soft: rgb(59 130 246 / 0.12);
+    --tone-fg: #1d4ed8;
+  }
+  .tone-orange {
+    --tone: #f59e0b;
+    --tone-soft: rgb(245 158 11 / 0.14);
+    --tone-fg: #b45309;
+  }
+  .tone-purple {
+    --tone: #8b5cf6;
+    --tone-soft: rgb(139 92 246 / 0.12);
+    --tone-fg: #6d28d9;
+  }
+  .tone-pink {
+    --tone: #ec4899;
+    --tone-soft: rgb(236 72 153 / 0.12);
+    --tone-fg: #be185d;
+  }
+  [data-theme='dark'] .tone-green {
+    --tone-fg: #34d399;
+    --tone-soft: rgb(16 185 129 / 0.16);
+  }
+  [data-theme='dark'] .tone-blue {
+    --tone-fg: #60a5fa;
+    --tone-soft: rgb(59 130 246 / 0.16);
+  }
+  [data-theme='dark'] .tone-orange {
+    --tone-fg: #fbbf24;
+    --tone-soft: rgb(245 158 11 / 0.16);
+  }
+  [data-theme='dark'] .tone-purple {
+    --tone-fg: #a78bfa;
+    --tone-soft: rgb(139 92 246 / 0.16);
+  }
+  [data-theme='dark'] .tone-pink {
+    --tone-fg: #f472b6;
+    --tone-soft: rgb(236 72 153 / 0.16);
+  }
+
   html {
     -webkit-tap-highlight-color: transparent;
   }
+
   body {
-    @apply bg-white text-ink font-sans antialiased;
+    @apply bg-canvas text-fg font-sans antialiased;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'ss01';
   }
-  h1, h2, h3, h4 {
-    @apply font-extrabold tracking-tight text-ink;
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-semibold tracking-[-0.011em] text-fg;
   }
+
   ::selection {
-    @apply bg-grass/25;
+    background: var(--accent-soft);
+    color: var(--accent-on-soft);
+  }
+
+  *:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--ring);
+    border-radius: 0.5rem;
   }
 }
 
 @layer components {
-  /* Chunky 3D button: 2px darker bottom border that collapses on press. */
+  /* --- buttons ------------------------------------------------------------ */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3
-           font-extrabold uppercase tracking-wide text-sm select-none
-           border-b-4 transition-all duration-100
-           active:translate-y-[2px] active:border-b-2
-           disabled:opacity-50 disabled:pointer-events-none;
+    @apply inline-flex h-10 select-none items-center justify-center gap-2 rounded-lg px-4
+           text-sm font-medium transition-colors duration-150
+           disabled:pointer-events-none disabled:opacity-45;
   }
   .btn-sm {
-    @apply px-3.5 py-2 text-xs rounded-xl border-b-4 active:border-b-2;
+    @apply h-8 gap-1.5 rounded-md px-3 text-[13px];
   }
   .btn-primary {
-    @apply btn bg-grass border-grass-dark text-white hover:brightness-105;
+    @apply btn bg-accent text-accent-fg shadow-xs hover:bg-accent-hover;
   }
   .btn-blue {
-    @apply btn bg-macaw border-macaw-dark text-white hover:brightness-105;
+    @apply btn-primary;
+  }
+  .btn-secondary,
+  .btn-ghost {
+    @apply btn border border-line bg-surface text-fg hover:bg-surface-3;
+  }
+  .btn-quiet {
+    @apply btn text-muted hover:bg-surface-3 hover:text-fg;
   }
   .btn-danger {
-    @apply btn bg-cardinal border-cardinal-dark text-white hover:brightness-105;
+    @apply btn bg-danger text-white hover:bg-danger-hover;
   }
-  .btn-ghost {
-    @apply btn bg-white border-swan text-wolf hover:bg-gray-50 border-2 border-b-4;
-  }
+
+  /* --- surfaces ----------------------------------------------------------- */
   .card {
-    @apply bg-white rounded-2xl border-2 border-swan shadow-sm;
+    @apply rounded-xl border border-line bg-surface;
   }
+  .card-hover {
+    @apply transition-[border-color,box-shadow] duration-150 hover:border-line-strong hover:shadow-sm;
+  }
+
+  /* --- forms -------------------------------------------------------------- */
   .input {
-    @apply w-full rounded-2xl border-2 border-swan bg-white px-4 py-3 text-ink
-           font-bold placeholder:font-normal placeholder:text-wolf
-           focus:outline-none focus:border-macaw transition-colors;
+    @apply w-full rounded-lg border border-line bg-surface px-3 py-2.5 text-sm text-fg
+           placeholder:text-subtle transition-colors
+           focus:border-accent focus:outline-none focus:ring-0;
+  }
+  select.input {
+    @apply cursor-pointer pr-8;
   }
   .label {
-    @apply block text-xs font-extrabold uppercase tracking-wide text-wolf mb-1.5;
+    @apply mb-1.5 block text-[13px] font-medium text-muted;
   }
+  .hint {
+    @apply mt-1.5 text-[13px] text-subtle;
+  }
+  .error-text {
+    @apply mt-1.5 text-[13px] text-danger;
+  }
+
+  /* --- bits --------------------------------------------------------------- */
   .chip {
-    @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-extrabold;
+    @apply inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium;
+  }
+  .chip-neutral {
+    @apply chip bg-surface-3 text-muted;
+  }
+  .chip-accent {
+    @apply chip bg-accent-soft text-accent-on-soft;
+  }
+  .divider {
+    @apply border-line;
   }
   .skeleton {
-    @apply rounded-2xl bg-gradient-to-r from-swan/60 via-swan/30 to-swan/60
-           bg-[length:800px_100%] animate-shimmer;
+    @apply rounded-lg;
+    background-image: linear-gradient(
+      90deg,
+      var(--skeleton-from) 0%,
+      var(--skeleton-via) 50%,
+      var(--skeleton-from) 100%
+    );
+    background-size: 960px 100%;
+    @apply animate-shimmer;
+  }
+
+  /* --- course tones ------------------------------------------------------- */
+  .tone-solid {
+    background-color: var(--tone);
+    color: #fff;
+  }
+  .tone-soft {
+    background-color: var(--tone-soft);
+    color: var(--tone-fg);
+  }
+  .tone-text {
+    color: var(--tone-fg);
+  }
+  .tone-bar {
+    background-color: var(--tone);
+  }
+  .tone-ring {
+    box-shadow: 0 0 0 2px var(--tone);
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }

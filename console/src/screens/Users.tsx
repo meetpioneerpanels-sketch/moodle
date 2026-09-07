@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react';
-import { Search } from 'lucide-react';
+import { Search, Users as UsersIcon } from 'lucide-react';
 import { useData } from '../hooks/useData';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
-import { EmptyState, RoleChip, SkeletonList } from '../components/ui';
-import { formatDate, initialsOf } from '../lib/format';
+import { Avatar, EmptyState, RoleChip, SkeletonList } from '../components/ui';
+import { formatDate } from '../lib/format';
 import type { Role } from '../types';
 
 const ROLES: Role[] = ['admin', 'teacher', 'student'];
@@ -29,21 +29,39 @@ export default function Users() {
       .sort((a, b) => b.createdAt - a.createdAt);
   }, [users, search]);
 
+  const roleSelect = (id: string, name: string, role: Role) => (
+    <select
+      className="rounded-md border border-line bg-surface px-2 py-1 text-[13px] capitalize text-fg transition-colors hover:bg-surface-3 focus:border-accent focus:outline-none"
+      value={role}
+      aria-label={`Role for ${name}`}
+      onChange={async (event) => {
+        await setUserRole(id, event.target.value as Role);
+        toast(`${name} is now a ${event.target.value}`);
+      }}
+    >
+      {ROLES.map((option) => (
+        <option key={option} value={option}>
+          {option}
+        </option>
+      ))}
+    </select>
+  );
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <header>
-        <h1 className="text-3xl">Users</h1>
-        <p className="mt-1 font-bold text-wolf">
+        <h1 className="text-xl font-semibold tracking-[-0.015em]">Users</h1>
+        <p className="mt-1 text-[13px] text-muted">
           {isAdmin
-            ? 'Admins can change any role. Changes apply immediately.'
+            ? 'Role changes apply immediately, everywhere.'
             : 'Only admins can change roles.'}
         </p>
       </header>
 
       <div className="relative">
-        <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-wolf" />
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-subtle" />
         <input
-          className="input pl-12"
+          className="input pl-9"
           placeholder="Search by name or email"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
@@ -52,56 +70,46 @@ export default function Users() {
       </div>
 
       {loading ? (
-        <SkeletonList rows={5} height="h-16" />
+        <SkeletonList rows={5} height="h-14" />
       ) : visible.length === 0 ? (
-        <EmptyState emoji="🧑‍🎓" title="No users match that search." />
+        <EmptyState
+          icon={<UsersIcon className="h-4 w-4" />}
+          title="No users match"
+          description="Try a different name or email."
+        />
       ) : (
         <>
           {/* Table on desktop */}
-          <div className="card hidden overflow-hidden md:block">
+          <div className="hidden overflow-hidden rounded-xl border border-line md:block">
             <table className="w-full text-left">
-              <thead className="bg-swan/30">
-                <tr className="text-xs font-extrabold uppercase tracking-wide text-wolf">
-                  <th className="px-5 py-3">Name</th>
-                  <th className="px-5 py-3">Email</th>
-                  <th className="px-5 py-3">Role</th>
-                  <th className="px-5 py-3">Joined</th>
+              <thead>
+                <tr className="border-b border-line bg-surface-2 text-[13px] font-medium text-subtle">
+                  <th className="px-4 py-2.5">Name</th>
+                  <th className="px-4 py-2.5">Email</th>
+                  <th className="px-4 py-2.5">Role</th>
+                  <th className="px-4 py-2.5">Joined</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-line">
                 {visible.map((item) => (
-                  <tr key={item.id} className="border-t-2 border-swan">
-                    <td className="px-5 py-3">
-                      <span className="flex items-center gap-3">
-                        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-macaw/15 text-xs font-extrabold text-macaw-dark">
-                          {initialsOf(item.name)}
-                        </span>
-                        <span className="font-extrabold">{item.name}</span>
+                  <tr key={item.id} className="bg-surface transition-colors hover:bg-surface-2">
+                    <td className="px-4 py-2.5">
+                      <span className="flex items-center gap-2.5">
+                        <Avatar name={item.name} size="sm" />
+                        <span className="text-sm font-medium">{item.name}</span>
                       </span>
                     </td>
-                    <td className="px-5 py-3 font-bold text-wolf">{item.email}</td>
-                    <td className="px-5 py-3">
+                    <td className="px-4 py-2.5 text-[13px] text-muted">{item.email}</td>
+                    <td className="px-4 py-2.5">
                       {isAdmin ? (
-                        <select
-                          className="rounded-xl border-2 border-swan bg-white px-3 py-1.5 text-sm font-extrabold capitalize focus:border-macaw focus:outline-none"
-                          value={item.role}
-                          aria-label={`Role for ${item.name}`}
-                          onChange={async (event) => {
-                            await setUserRole(item.id, event.target.value as Role);
-                            toast(`${item.name} is now a ${event.target.value}`);
-                          }}
-                        >
-                          {ROLES.map((role) => (
-                            <option key={role} value={role}>
-                              {role}
-                            </option>
-                          ))}
-                        </select>
+                        roleSelect(item.id, item.name, item.role)
                       ) : (
                         <RoleChip role={item.role} />
                       )}
                     </td>
-                    <td className="px-5 py-3 font-bold text-wolf">{formatDate(item.createdAt)}</td>
+                    <td className="px-4 py-2.5 text-[13px] text-subtle">
+                      {formatDate(item.createdAt)}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -109,38 +117,15 @@ export default function Users() {
           </div>
 
           {/* Cards on mobile */}
-          <ul className="space-y-3 md:hidden">
+          <ul className="divide-y divide-line overflow-hidden rounded-xl border border-line md:hidden">
             {visible.map((item) => (
-              <li key={item.id} className="card flex items-center gap-3 p-4">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-macaw/15 text-sm font-extrabold text-macaw-dark">
-                  {initialsOf(item.name)}
-                </span>
+              <li key={item.id} className="flex items-center gap-3 bg-surface px-4 py-3">
+                <Avatar name={item.name} />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-extrabold">{item.name}</p>
-                  <p className="truncate text-sm font-bold text-wolf">{item.email}</p>
-                  <p className="text-xs font-bold text-wolf">
-                    Joined {formatDate(item.createdAt)}
-                  </p>
+                  <p className="truncate text-sm font-medium">{item.name}</p>
+                  <p className="truncate text-[13px] text-subtle">{item.email}</p>
                 </div>
-                {isAdmin ? (
-                  <select
-                    className="rounded-xl border-2 border-swan bg-white px-2 py-1.5 text-xs font-extrabold capitalize focus:border-macaw focus:outline-none"
-                    value={item.role}
-                    aria-label={`Role for ${item.name}`}
-                    onChange={async (event) => {
-                      await setUserRole(item.id, event.target.value as Role);
-                      toast(`${item.name} is now a ${event.target.value}`);
-                    }}
-                  >
-                    {ROLES.map((role) => (
-                      <option key={role} value={role}>
-                        {role}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <RoleChip role={item.role} />
-                )}
+                {isAdmin ? roleSelect(item.id, item.name, item.role) : <RoleChip role={item.role} />}
               </li>
             ))}
           </ul>

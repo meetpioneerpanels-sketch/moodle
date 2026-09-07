@@ -170,6 +170,7 @@ mistake here locks out every student at once.
 | PWABuilder fails its analysis | Manifest or service worker not reachable at the deployed URL | Confirm HTTPS, that `/manifest.webmanifest` and `/sw.js` return 200, and that `sw.js` registers without console errors |
 | APK installs but shows a white screen | The deployed URL changed after packaging | Redeploy to the same stable URL, or re-package |
 | YouTube video shows an error in a lesson | A watch link was stored instead of an embed link | Re-save the lesson in the console - its editor rewrites links to `youtube.com/embed/VIDEO_ID` |
+| The app flashes white before going dark | The inline theme script in `index.html` was removed | Restore it - it sets `data-theme` before first paint (see `docs/DESIGN.md`) |
 | Offline start shows a blank page | An old service worker is cached | Bump `VERSION` in `student/public/sw.js`, redeploy, then reload twice |
 
 Check the browser console (F12) before anything else: Firestore permission errors and

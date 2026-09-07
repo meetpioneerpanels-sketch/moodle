@@ -29,16 +29,16 @@ function DemoBanner() {
   const [dismissed, setDismissed] = useState(false);
   if (!isDemoMode || dismissed) return null;
   return (
-    <div className="flex items-center gap-2 bg-bee px-4 py-2 text-xs font-extrabold text-ink">
-      <span aria-hidden="true">⚡</span>
+    <div className="flex items-center gap-2 border-b border-line bg-surface-2 px-4 py-2 text-[13px] text-muted">
+      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-warning" aria-hidden="true" />
       <p className="flex-1">Demo mode - live sync off</p>
       <button
         type="button"
         aria-label="Dismiss demo banner"
         onClick={() => setDismissed(true)}
-        className="rounded-full p-1"
+        className="rounded p-1 text-subtle"
       >
-        <X className="h-4 w-4" />
+        <X className="h-3.5 w-3.5" />
       </button>
     </div>
   );
@@ -48,8 +48,8 @@ function OfflineBanner() {
   const online = useOnline();
   if (online) return null;
   return (
-    <div className="flex items-center gap-2 bg-fox px-4 py-2 text-xs font-extrabold text-white">
-      <WifiOff className="h-4 w-4" />
+    <div className="flex items-center gap-2 border-b border-line bg-warning-soft px-4 py-2 text-[13px] text-warning">
+      <WifiOff className="h-3.5 w-3.5 shrink-0" />
       You are offline - showing downloaded lessons
     </div>
   );
@@ -60,21 +60,18 @@ function InstallBanner() {
   const [dismissed, setDismissed] = useState(false);
   if (!canInstall || dismissed) return null;
   return (
-    <div className="flex items-center gap-3 border-b-2 border-swan bg-macaw/10 px-4 py-2.5">
-      <span className="text-xl" aria-hidden="true">
-        📲
-      </span>
-      <p className="flex-1 text-sm font-extrabold">Add EduHub to your home screen</p>
-      <button type="button" className="btn-blue btn-sm" onClick={install}>
+    <div className="flex items-center gap-2.5 border-b border-line bg-surface-2 px-4 py-2.5">
+      <p className="flex-1 text-[13px] font-medium">Add EduHub to your home screen</p>
+      <button type="button" className="btn-primary btn-sm" onClick={install}>
         Install
       </button>
       <button
         type="button"
         aria-label="Dismiss install banner"
         onClick={() => setDismissed(true)}
-        className="text-wolf"
+        className="rounded p-1 text-subtle"
       >
-        <X className="h-4 w-4" />
+        <X className="h-3.5 w-3.5" />
       </button>
     </div>
   );
@@ -106,11 +103,11 @@ function Shell() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[100dvh] flex-col items-center justify-center gap-3">
-        <span className="text-6xl" aria-hidden="true">
-          🎓
-        </span>
-        <p className="font-extrabold text-wolf">Loading EduHub...</p>
+      <div className="flex min-h-[100dvh] items-center justify-center bg-canvas">
+        <div className="flex items-center gap-2.5 text-[13px] text-subtle">
+          <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-line border-t-accent" />
+          Loading EduHub...
+        </div>
       </div>
     );
   }
@@ -121,7 +118,7 @@ function Shell() {
   const activeTab: Tab = stack[0]!.kind === 'tab' ? (stack[0] as { tab: Tab }).tab : 'home';
 
   return (
-    <div className="mx-auto flex min-h-[100dvh] max-w-md flex-col bg-white">
+    <div className="mx-auto flex min-h-[100dvh] max-w-md flex-col bg-canvas">
       <DemoBanner />
       <OfflineBanner />
       {!onLesson && <InstallBanner />}
@@ -164,18 +161,18 @@ function Shell() {
       </main>
 
       {!onLesson && (
-        <nav className="fixed bottom-0 left-1/2 z-40 flex w-full max-w-md -translate-x-1/2 border-t-2 border-swan bg-white pb-safe">
+        <nav className="fixed bottom-0 left-1/2 z-40 flex w-full max-w-md -translate-x-1/2 border-t border-line bg-surface pb-safe">
           {TABS.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               type="button"
               onClick={() => goToTab(id)}
               aria-current={activeTab === id ? 'page' : undefined}
-              className={`flex min-h-[56px] flex-1 flex-col items-center justify-center gap-1 text-[11px] font-extrabold uppercase tracking-wide transition-colors ${
-                activeTab === id ? 'text-grass-dark' : 'text-wolf'
+              className={`flex min-h-[56px] flex-1 flex-col items-center justify-center gap-1 text-2xs font-medium transition-colors ${
+                activeTab === id ? 'text-accent' : 'text-subtle'
               }`}
             >
-              <Icon className="h-6 w-6" /> {label}
+              <Icon className="h-5 w-5" /> {label}
             </button>
           ))}
         </nav>

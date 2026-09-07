@@ -4,6 +4,7 @@ import {
   ArrowDown,
   ArrowUp,
   Clock,
+  FileText,
   Image as ImageIcon,
   Pencil,
   Plus,
@@ -16,7 +17,7 @@ import { useToast } from '../hooks/useToast';
 import { ConfirmDialog, EmptyState, SkeletonList, Toggle } from '../components/ui';
 import CourseModal from '../components/CourseModal';
 import LessonEditor from '../components/LessonEditor';
-import { themeOf } from '../lib/theme';
+import { toneOf } from '../lib/theme';
 import { burstConfetti } from '../lib/confetti';
 import type { Lesson, LessonDraft } from '../types';
 
@@ -54,16 +55,17 @@ export default function CourseEditor({ courseId, onBack }: Props) {
     [lessons, courseId],
   );
 
-  if (loading && !course) return <SkeletonList rows={4} height="h-24" />;
+  if (loading && !course) return <SkeletonList rows={4} height="h-20" />;
 
   if (!course) {
     return (
       <EmptyState
-        emoji="🧭"
-        title="That course no longer exists."
+        icon={<FileText className="h-4 w-4" />}
+        title="Course not found"
+        description="It may have been deleted by another teacher."
         action={
-          <button type="button" className="btn-ghost" onClick={onBack}>
-            <ArrowLeft className="h-4 w-4" /> Back to courses
+          <button type="button" className="btn-secondary btn-sm" onClick={onBack}>
+            <ArrowLeft className="h-3.5 w-3.5" /> Back to courses
           </button>
         }
       />
@@ -71,7 +73,7 @@ export default function CourseEditor({ courseId, onBack }: Props) {
   }
 
   const canEdit = user?.role === 'admin' || course.teacherId === user?.id;
-  const theme = themeOf(course.colorTheme);
+  const tone = toneOf(course.colorTheme);
 
   async function handlePublish(next: boolean, event: ReactMouseEvent) {
     if (!course) return;
@@ -94,152 +96,153 @@ export default function CourseEditor({ courseId, onBack }: Props) {
   }
 
   return (
-    <div className="space-y-6">
-      <button type="button" className="btn-ghost btn-sm" onClick={onBack}>
-        <ArrowLeft className="h-4 w-4" /> All courses
+    <div className={`${tone} space-y-6`}>
+      <button type="button" className="btn-quiet btn-sm -ml-2" onClick={onBack}>
+        <ArrowLeft className="h-3.5 w-3.5" /> All courses
       </button>
 
       {/* Course header */}
-      <header className="card flex flex-col gap-4 p-5 sm:flex-row sm:items-center">
-        <span
-          className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl text-4xl ${theme.bg}`}
-          aria-hidden="true"
-        >
-          {course.emoji}
-        </span>
-        <div className="min-w-0 flex-1">
-          <h1 className="text-2xl">{course.title}</h1>
-          <p className="mt-1 font-bold text-wolf">{course.description || 'No description yet.'}</p>
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            <span className={`chip ${theme.soft} ${theme.text}`}>{course.category}</span>
-            <span className="chip bg-swan/60 text-wolf">{course.teacherName}</span>
-            <span className="chip bg-swan/60 text-wolf">
-              {courseLessons.length} lesson{courseLessons.length === 1 ? '' : 's'}
-            </span>
-          </div>
-        </div>
-        <div className="flex flex-col items-start gap-3 sm:items-end">
-          <div className="flex items-center gap-2">
-            <span
-              className={`text-xs font-extrabold uppercase tracking-wide ${
-                course.published ? 'text-grass-dark' : 'text-wolf'
-              }`}
-            >
-              {course.published ? 'Published' : 'Draft'}
-            </span>
-            <Toggle
-              checked={course.published}
-              disabled={!canEdit}
-              onChange={handlePublish}
-              label="Publish course"
-            />
-          </div>
-          {canEdit && (
-            <div className="flex gap-2">
-              <button
-                type="button"
-                className="btn-ghost btn-sm"
-                onClick={() => setEditCourseOpen(true)}
-              >
-                <Pencil className="h-4 w-4" /> Edit
-              </button>
-              <button
-                type="button"
-                className="btn-danger btn-sm"
-                onClick={() => setConfirmCourseDelete(true)}
-              >
-                <Trash2 className="h-4 w-4" /> Delete
-              </button>
+      <header className="card p-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+          <span className="tone-soft flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-2xl">
+            {course.emoji}
+          </span>
+          <div className="min-w-0 flex-1">
+            <h1 className="text-lg font-semibold tracking-[-0.015em]">{course.title}</h1>
+            <p className="mt-1 text-[13px] leading-relaxed text-muted">
+              {course.description || 'No description yet.'}
+            </p>
+            <div className="mt-3 flex flex-wrap items-center gap-1.5">
+              <span className="chip tone-soft">{course.category}</span>
+              <span className="chip-neutral">{course.teacherName}</span>
+              <span className="chip-neutral">
+                {courseLessons.length} lesson{courseLessons.length === 1 ? '' : 's'}
+              </span>
             </div>
-          )}
+          </div>
+          <div className="flex flex-col items-start gap-3 sm:items-end">
+            <div className="flex items-center gap-2">
+              <span
+                className={`text-[13px] ${course.published ? 'text-success' : 'text-subtle'}`}
+              >
+                {course.published ? 'Published' : 'Draft'}
+              </span>
+              <Toggle
+                checked={course.published}
+                disabled={!canEdit}
+                onChange={handlePublish}
+                label="Publish course"
+              />
+            </div>
+            {canEdit && (
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  className="btn-secondary btn-sm"
+                  onClick={() => setEditCourseOpen(true)}
+                >
+                  <Pencil className="h-3.5 w-3.5" /> Edit
+                </button>
+                <button
+                  type="button"
+                  className="btn-secondary btn-sm text-danger"
+                  onClick={() => setConfirmCourseDelete(true)}
+                >
+                  <Trash2 className="h-3.5 w-3.5" /> Delete
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
       {/* Lessons */}
       <section className="space-y-3">
         <div className="flex items-center gap-3">
-          <h2 className="text-xl">Lessons</h2>
+          <h2 className="text-[13px] font-medium text-muted">Lessons</h2>
           {canEdit && (
             <button
               type="button"
-              className="btn-primary btn-sm ml-auto"
+              className="btn-secondary btn-sm ml-auto"
               onClick={() => {
                 setEditingLesson(null);
                 setLessonEditorOpen(true);
               }}
             >
-              <Plus className="h-4 w-4" /> Add lesson
+              <Plus className="h-3.5 w-3.5" /> Add lesson
             </button>
           )}
         </div>
 
         {loading ? (
-          <SkeletonList rows={3} height="h-24" />
+          <SkeletonList rows={3} height="h-16" />
         ) : courseLessons.length === 0 ? (
           <EmptyState
-            emoji="📝"
-            title="No lessons yet - add the first one!"
+            icon={<FileText className="h-4 w-4" />}
+            title="No lessons yet"
+            description="Add the first lesson to this course."
             action={
               canEdit ? (
                 <button
                   type="button"
-                  className="btn-primary"
+                  className="btn-primary btn-sm"
                   onClick={() => {
                     setEditingLesson(null);
                     setLessonEditorOpen(true);
                   }}
                 >
-                  <Plus className="h-4 w-4" /> Add lesson
+                  <Plus className="h-3.5 w-3.5" /> Add lesson
                 </button>
               ) : undefined
             }
           />
         ) : (
-          <ol className="space-y-3">
+          <ol className="divide-y divide-line overflow-hidden rounded-xl border border-line">
             {courseLessons.map((lesson, index) => (
-              <li key={lesson.id} className="card flex items-center gap-4 p-4">
-                <span
-                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-extrabold text-white ${theme.bg}`}
-                >
+              <li
+                key={lesson.id}
+                className="group flex items-center gap-3 bg-surface px-4 py-3 transition-colors hover:bg-surface-2"
+              >
+                <span className="w-5 shrink-0 text-center text-[13px] tabular-nums text-subtle">
                   {index + 1}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-extrabold">{lesson.title}</p>
-                  <p className="mt-0.5 flex flex-wrap items-center gap-3 text-sm font-bold text-wolf">
+                  <p className="truncate text-sm font-medium">{lesson.title}</p>
+                  <p className="mt-0.5 flex flex-wrap items-center gap-2.5 text-[13px] text-subtle">
                     <span className="inline-flex items-center gap-1">
-                      <Clock className="h-4 w-4" /> {lesson.durationMin} min
+                      <Clock className="h-3.5 w-3.5" /> {lesson.durationMin} min
                     </span>
                     {lesson.imageUrl && (
                       <span className="inline-flex items-center gap-1">
-                        <ImageIcon className="h-4 w-4" /> image
+                        <ImageIcon className="h-3.5 w-3.5" /> image
                       </span>
                     )}
                     {lesson.videoUrl && (
                       <span className="inline-flex items-center gap-1">
-                        <Video className="h-4 w-4" /> video
+                        <Video className="h-3.5 w-3.5" /> video
                       </span>
                     )}
                   </p>
                 </div>
                 {canEdit && (
-                  <div className="flex shrink-0 items-center gap-1">
+                  <div className="flex shrink-0 items-center gap-0.5 opacity-60 transition-opacity group-hover:opacity-100">
                     <button
                       type="button"
                       aria-label={`Move ${lesson.title} up`}
                       disabled={index === 0}
                       onClick={() => moveLesson(courseId, lesson.id, -1)}
-                      className="rounded-xl p-2 text-wolf transition-colors hover:bg-swan/40 hover:text-ink disabled:opacity-30"
+                      className="rounded-md p-1.5 text-subtle transition-colors hover:bg-surface-3 hover:text-fg disabled:opacity-25"
                     >
-                      <ArrowUp className="h-4 w-4" />
+                      <ArrowUp className="h-3.5 w-3.5" />
                     </button>
                     <button
                       type="button"
                       aria-label={`Move ${lesson.title} down`}
                       disabled={index === courseLessons.length - 1}
                       onClick={() => moveLesson(courseId, lesson.id, 1)}
-                      className="rounded-xl p-2 text-wolf transition-colors hover:bg-swan/40 hover:text-ink disabled:opacity-30"
+                      className="rounded-md p-1.5 text-subtle transition-colors hover:bg-surface-3 hover:text-fg disabled:opacity-25"
                     >
-                      <ArrowDown className="h-4 w-4" />
+                      <ArrowDown className="h-3.5 w-3.5" />
                     </button>
                     <button
                       type="button"
@@ -248,17 +251,17 @@ export default function CourseEditor({ courseId, onBack }: Props) {
                         setEditingLesson(lesson);
                         setLessonEditorOpen(true);
                       }}
-                      className="rounded-xl p-2 text-macaw transition-colors hover:bg-macaw/10"
+                      className="rounded-md p-1.5 text-subtle transition-colors hover:bg-surface-3 hover:text-fg"
                     >
-                      <Pencil className="h-4 w-4" />
+                      <Pencil className="h-3.5 w-3.5" />
                     </button>
                     <button
                       type="button"
                       aria-label={`Delete ${lesson.title}`}
                       onClick={() => setLessonToDelete(lesson)}
-                      className="rounded-xl p-2 text-cardinal transition-colors hover:bg-cardinal/10"
+                      className="rounded-md p-1.5 text-subtle transition-colors hover:bg-danger-soft hover:text-danger"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-3.5 w-3.5" />
                     </button>
                   </div>
                 )}

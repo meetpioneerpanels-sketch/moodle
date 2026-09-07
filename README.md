@@ -69,6 +69,7 @@ student/                Student learning PWA (same stack, mobile-first)
   src/screens/          Login, Home, Browse, Course detail, Lesson player, Profile
   src/lib/offline.ts    localStorage cache of recently read lessons
 e2e/                    Playwright smoke tests for both apps (25 checks, no Firebase needed)
+docs/DESIGN.md          Design tokens, theming, type and motion
 docs/DEPLOYMENT.md      Firebase setup, live-sync test, APK packaging, troubleshooting
 docs/DATA-MODEL.md      The schema contract between the two apps
 docs/AI-STUDIO-PROMPTS.md  The original build-kit prompts this repo implements
@@ -78,9 +79,17 @@ firestore.rules         Starter security rules (signed-in users only)
 ## Tech
 
 React 18, TypeScript, Tailwind CSS, Vite, Firebase JS SDK v10 (Auth + Firestore),
-lucide-react icons, Nunito. No router library - both apps use state-based navigation, and
+lucide-react icons, Inter. No router library - both apps use state-based navigation, and
 the student app pushes a history entry per screen so the Android back button behaves
 natively.
+
+## Design
+
+A refined, minimal interface built on CSS-variable tokens, with a light/dark/system theme
+switch in both apps. Borders rather than heavy shadows, a narrow type scale where weight
+carries the hierarchy, and one indigo accent used sparingly - so the course content is the
+loudest thing on screen. Each course's colour becomes a `tone-*` class that stays legible in
+both themes. See [`docs/DESIGN.md`](docs/DESIGN.md).
 
 ## Roles
 

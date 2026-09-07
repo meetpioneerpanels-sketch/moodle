@@ -83,16 +83,16 @@ export default function LessonEditor({ open, lesson, courseTitle, onClose, onSav
       onClose={onClose}
       footer={
         <>
-          <button type="button" className="btn-ghost" onClick={onClose}>
+          <button type="button" className="btn-secondary btn-sm" onClick={onClose}>
             Cancel
           </button>
-          <button type="button" className="btn-primary" onClick={handleSave} disabled={busy}>
+          <button type="button" className="btn-primary btn-sm" onClick={handleSave} disabled={busy}>
             Save lesson
           </button>
         </>
       }
     >
-      <div className="space-y-5">
+      <div className="space-y-4">
         <div>
           <label className="label" htmlFor="lesson-title">
             Title
@@ -112,14 +112,14 @@ export default function LessonEditor({ open, lesson, courseTitle, onClose, onSav
           </label>
           <textarea
             id="lesson-content"
-            className="input min-h-[220px] resize-y font-normal leading-relaxed"
+            className="input min-h-[200px] resize-y leading-relaxed"
             value={draft.content}
             onChange={(event) => setDraft({ ...draft, content: event.target.value })}
             placeholder={'Write the lesson here.\n\nLeave a blank line between paragraphs.'}
           />
-          <p className="mt-1 text-xs font-bold text-wolf">
-            {draft.content.trim() ? draft.content.trim().split(/\s+/).length : 0} words - blank lines
-            become paragraphs in the student app.
+          <p className="hint">
+            {draft.content.trim() ? draft.content.trim().split(/\s+/).length : 0} words · blank lines
+            become paragraphs in the student app
           </p>
         </div>
 
@@ -142,14 +142,14 @@ export default function LessonEditor({ open, lesson, courseTitle, onClose, onSav
           </div>
           <div>
             <label className="label" htmlFor="lesson-image">
-              Image URL (optional)
+              Image URL
             </label>
             <input
               id="lesson-image"
               className="input"
               value={draft.imageUrl}
               onChange={(event) => setDraft({ ...draft, imageUrl: event.target.value })}
-              placeholder="https://..."
+              placeholder="https://"
             />
           </div>
         </div>
@@ -158,7 +158,7 @@ export default function LessonEditor({ open, lesson, courseTitle, onClose, onSav
           <img
             src={draft.imageUrl}
             alt="Lesson illustration preview"
-            className="max-h-48 w-full rounded-2xl border-2 border-swan object-cover"
+            className="max-h-44 w-full rounded-lg border border-line object-cover"
             onError={(event) => {
               (event.currentTarget as HTMLImageElement).style.display = 'none';
             }}
@@ -167,24 +167,24 @@ export default function LessonEditor({ open, lesson, courseTitle, onClose, onSav
 
         <div>
           <label className="label" htmlFor="lesson-video">
-            YouTube URL (optional)
+            YouTube URL
           </label>
           <input
             id="lesson-video"
             className="input"
             value={draft.videoUrl}
             onChange={(event) => setDraft({ ...draft, videoUrl: event.target.value })}
-            placeholder="https://www.youtube.com/watch?v=..."
+            placeholder="https://www.youtube.com/watch?v="
           />
-          {draft.videoUrl.trim() && !embedUrl && (
-            <p className="mt-1 text-sm font-bold text-cardinal">
-              Not a recognised YouTube link.
-            </p>
+          {draft.videoUrl.trim() && !embedUrl ? (
+            <p className="error-text">Not a recognised YouTube link.</p>
+          ) : (
+            <p className="hint">Watch, share and shorts links are converted to embeds on save.</p>
           )}
         </div>
 
         {embedUrl && (
-          <div className="aspect-video w-full overflow-hidden rounded-2xl border-2 border-swan">
+          <div className="aspect-video w-full overflow-hidden rounded-lg border border-line">
             <iframe
               src={embedUrl}
               title="Lesson video preview"
@@ -195,11 +195,7 @@ export default function LessonEditor({ open, lesson, courseTitle, onClose, onSav
           </div>
         )}
 
-        {error && (
-          <p className="rounded-2xl bg-cardinal/10 px-4 py-3 text-sm font-bold text-cardinal">
-            {error}
-          </p>
-        )}
+        {error && <p className="error-text">{error}</p>}
       </div>
     </Modal>
   );
