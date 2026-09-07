@@ -116,13 +116,26 @@ await step('solutions expand on demand', async () => {
   await page.getByRole('button', { name: 'Hide solutions' }).click();
 });
 
-await step('the attempt lands in analytics', async () => {
+await step('the attempt lands in analytics beside the seeded history', async () => {
   await page.getByRole('button', { name: 'Done' }).click();
   await page.getByRole('heading', { name: 'Analytics' }).waitFor();
   await page.getByText('All Subjects').waitFor();
   await page.getByText('Questions Correct').waitFor();
   await page.getByText('Tests Attempted').waitFor();
   await page.getByText('Topical Test - 01').first().waitFor();
+
+  // The seeded attempts must produce a real per-subject reading, not 0%.
+  const percentages = await page.locator('p.tabular-nums').allInnerTexts();
+  const nonZero = percentages.filter((value) => /^[1-9]\d?%$|^100%$/.test(value.trim()));
+  if (nonZero.length === 0) {
+    throw new Error(`expected seeded history to give non-zero subject accuracy, saw ${percentages.join(', ')}`);
+  }
+
+  // Attempts are counted, not just the one just taken.
+  const attempted = await page.getByText(/^\d+\/20$/).first().innerText();
+  if (Number(attempted.split('/')[0]) < 2) {
+    throw new Error(`expected several attempts in the history, saw ${attempted}`);
+  }
 });
 
 await step('progress tab lists course completion', async () => {
@@ -137,7 +150,9 @@ await step('asking a doubt records it', async () => {
   await page.getByLabel('Your question').fill('I do not follow the step where 72 - 8n becomes zero.');
   await page.getByRole('button', { name: 'Send to a teacher' }).click();
   await page.getByText('Sent - a teacher will reply shortly').waitFor();
-  await page.getByText('Waiting').waitFor();
+  // The seeded history already contains an open doubt, so scope to the newest.
+  await page.getByText('Waiting').first().waitFor();
+  await page.getByText('I do not follow the step where 72').waitFor();
 });
 
 await step('live classes list what is included', async () => {

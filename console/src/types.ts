@@ -128,6 +128,8 @@ export interface Test {
   title: string;
   subject: Subject;
   chapter: string;
+  /** What the chapter covers, e.g. "Sequences and Series". */
+  topic: string;
   universityId: string;
   questionCount: number;
   /** Seconds allowed per question. */
@@ -205,7 +207,7 @@ export type LessonDraft = Pick<
 
 export type TestDraft = Pick<
   Test,
-  'title' | 'subject' | 'chapter' | 'universityId' | 'secondsPerQuestion' | 'locked'
+  'title' | 'subject' | 'chapter' | 'topic' | 'universityId' | 'secondsPerQuestion' | 'locked'
 >;
 
 export type QuestionDraft = Pick<

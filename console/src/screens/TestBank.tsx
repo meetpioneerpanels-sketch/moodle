@@ -13,6 +13,7 @@ const EMPTY_TEST: TestDraft = {
   title: '',
   subject: 'Maths',
   chapter: 'Ch 1',
+  topic: '',
   universityId: 'nust',
   secondsPerQuestion: 15,
   locked: false,
@@ -90,6 +91,7 @@ export default function TestBank() {
               <div className="mt-2 flex flex-wrap items-center gap-1.5">
                 <span className="chip tone-soft">{openTest.subject}</span>
                 <span className="chip-neutral">{openTest.chapter}</span>
+                {openTest.topic && <span className="chip-neutral">{openTest.topic}</span>}
                 <span className="chip-neutral">{questions.length} questions</span>
                 <span className="chip-neutral">{openTest.secondsPerQuestion}s per question</span>
                 <span className={`chip ${openTest.locked ? 'bg-surface-3 text-muted' : 'bg-success-soft text-success'}`}>
@@ -115,6 +117,7 @@ export default function TestBank() {
                     title: openTest.title,
                     subject: openTest.subject,
                     chapter: openTest.chapter,
+                    topic: openTest.topic,
                     universityId: openTest.universityId,
                     secondsPerQuestion: openTest.secondsPerQuestion,
                     locked: openTest.locked,
@@ -294,7 +297,8 @@ export default function TestBank() {
                 <span className="chip-neutral shrink-0">{test.chapter}</span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-medium">{test.title}</span>
-                  <span className="block text-[13px] text-subtle">
+                  <span className="block truncate text-[13px] text-subtle">
+                    {test.topic ? `${test.topic} · ` : ''}
                     {test.questionCount} question{test.questionCount === 1 ? '' : 's'} ·{' '}
                     {universities.find((university) => university.id === test.universityId)?.name ??
                       test.universityId}
@@ -371,6 +375,20 @@ export default function TestBank() {
               onChange={(event) => setTestDraft({ ...testDraft, title: event.target.value })}
               placeholder="Topical Test - 01"
             />
+          </div>
+
+          <div>
+            <label className="label" htmlFor="test-topic">
+              Topic
+            </label>
+            <input
+              id="test-topic"
+              className="input"
+              value={testDraft.topic}
+              onChange={(event) => setTestDraft({ ...testDraft, topic: event.target.value })}
+              placeholder="Sequences and Series"
+            />
+            <p className="hint">Shown under the test name in the student Practice Zone.</p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">

@@ -28,6 +28,8 @@ export default function PracticeZone({ onBack, onStartTest }: Props) {
   );
 
   const attemptedIds = new Set(attempts.map((attempt) => attempt.testId));
+  // Every test in a chapter covers the same topic, so read it off the first.
+  const chapterTopic = visible[0]?.topic ?? '';
 
   return (
     <div className="min-h-[100dvh] pb-28">
@@ -60,6 +62,10 @@ export default function PracticeZone({ onBack, onStartTest }: Props) {
         </div>
 
         <PillTabs tabs={CHAPTERS} active={chapter} onChange={setChapter} />
+
+        {chapterTopic && (
+          <p className="px-1 text-[13px] font-medium text-muted">{chapterTopic}</p>
+        )}
 
         {visible.length === 0 ? (
           <EmptyState

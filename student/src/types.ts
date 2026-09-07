@@ -119,6 +119,8 @@ export interface Test {
   title: string;
   subject: Subject;
   chapter: string;
+  /** What the chapter covers, e.g. "Sequences and Series". */
+  topic: string;
   universityId: string;
   questionCount: number;
   /** Seconds allowed per question. */

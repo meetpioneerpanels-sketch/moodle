@@ -50,6 +50,12 @@ cd student && npm install && npm run dev   # http://localhost:5174
 In demo mode any email plus a six-character password signs you in. The first account you
 create becomes the admin, exactly as it will against a real Firebase project.
 
+The demo is seeded to look lived-in: 96 topical tests across four subjects (16 of them
+playable, with 96 written questions and worked solutions), twelve past attempts spread over
+the last fortnight so the analytics rings and streak read properly, answered and open
+doubts, five courses with fourteen lessons, twelve universities and six class offerings.
+See [`docs/DATA-MODEL.md`](docs/DATA-MODEL.md#demo-seed).
+
 To go live, paste your Firebase web config into **both** `console/src/firebase.ts` and
 `student/src/firebase.ts` - the same `projectId` in both files is what makes live sync
 work. Full instructions: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
@@ -87,6 +93,7 @@ student/                Student learning PWA (same stack, mobile-first)
   src/screens/          Login, onboarding, Home, Practice Zone, Test player, Score report,
                         Analytics, Live Classes, Ask a Doubt, Menu, course reading
   src/components/charts.tsx  Donut, MultiRing and BarChart - no charting dependency
+  src/lib/questionBank.ts    96 seed questions, 16 chapters, with worked solutions
   src/lib/offline.ts    localStorage cache of recently read lessons
 e2e/                    Playwright smoke tests for both apps (25 checks, no Firebase needed)
 docs/DESIGN.md          Design tokens, theming, type and motion

@@ -10,7 +10,7 @@ const TABS = ['Performance', 'Progress'] as const;
 const FILTERS = ['All', ...CATEGORIES] as const;
 
 export default function Analytics() {
-  const { attempts, courses, lessons, completedCount } = useData();
+  const { attempts, courses, lessons, tests, completedCount } = useData();
   const [tab, setTab] = useState<(typeof TABS)[number]>('Performance');
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>('All');
 
@@ -175,8 +175,10 @@ export default function Analytics() {
                         <span className="block truncate text-[13px] font-medium">
                           {attempt.testTitle}
                         </span>
-                        <span className="block text-2xs text-subtle">
-                          {attempt.subject} · {attempt.secondsTaken}s
+                        <span className="block truncate text-2xs text-subtle">
+                          {tests.find((test) => test.id === attempt.testId)?.topic ??
+                            attempt.subject}{' '}
+                          · {attempt.secondsTaken}s
                         </span>
                       </span>
                       <span className="text-sm font-semibold tabular-nums">

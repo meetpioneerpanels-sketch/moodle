@@ -119,16 +119,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = useCallback(async (email: string, password: string) => {
     if (isDemoMode) {
-      const existing = demoStore.findUserByEmail(email);
-      setUser(
-        existing ??
-          demoStore.addUser({
-            name: displayNameFrom(email),
-            email,
-            role: 'student',
-            createdAt: Date.now(),
-          }),
-      );
+      const account =
+        demoStore.findUserByEmail(email) ??
+        demoStore.addUser({
+          name: displayNameFrom(email),
+          email,
+          role: 'student',
+          createdAt: Date.now(),
+        });
+      // Hand the seeded attempts and doubts to whoever signs in, so the demo
+      // opens with a lived-in history rather than empty analytics.
+      demoStore.attachDemoHistory(account.id);
+      setUser(account);
       return;
     }
     try {
@@ -144,7 +146,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (demoStore.findUserByEmail(email)) {
           throw new Error('An account with that email already exists. Try logging in.');
         }
-        setUser(demoStore.addUser({ name, email, role, createdAt: Date.now() }));
+        const account = demoStore.addUser({ name, email, role, createdAt: Date.now() });
+        demoStore.attachDemoHistory(account.id);
+        setUser(account);
         return;
       }
       try {
